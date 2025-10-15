@@ -118,6 +118,12 @@ All colors MUST be HSL.
   .animate-scale-in {
     animation: scaleIn 0.4s ease-out;
   }
+
+  /* Ticker marquee */
+  .marquee { position: relative; }
+  .marquee-content { width: max-content; animation: ticker 25s linear infinite; }
+  .marquee-track { }
+  .pause-on-hover:hover .marquee-content { animation-play-state: paused; }
 }
 
 @keyframes fadeIn {
@@ -149,4 +155,9 @@ All colors MUST be HSL.
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
