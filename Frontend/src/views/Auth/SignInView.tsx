@@ -15,8 +15,10 @@ const SignInView = () => {
     e.preventDefault();
     setError(null);
     try {
+      console.log('before signIn');
       await signIn(email, password);
-      navigate("/");
+      console.log('after signIn');
+      navigate("/dashboard");
     } catch (err: any) {
       setError(err?.message ?? "Unable to sign in");
     }

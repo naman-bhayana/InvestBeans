@@ -4,7 +4,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "types": ["vite/client"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,
@@ -12,5 +13,6 @@
     "allowJs": true,
     "noUnusedLocals": false,
     "strictNullChecks": false
-  }
+  },
+  // "include": ["env.d.ts", "src"]
 }

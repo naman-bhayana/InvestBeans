@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 const SignUpView = () => {
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const [name,setName]=useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -15,8 +16,8 @@ const SignUpView = () => {
     e.preventDefault();
     setError(null);
     try {
-      await signUp(email, password);
-      navigate("/");
+      await signUp(name, email, password);
+      navigate("/dashboard");
     } catch (err: any) {
       setError(err?.message ?? "Unable to sign up");
     }
@@ -28,6 +29,7 @@ const SignUpView = () => {
         <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
         <div className="space-y-4">
+           <Input type="name" placeholder="Name" value={name} onChange={e => setName(e.target.value)} required />
           <Input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
           <Input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
           <Button type="submit" className="w-full">Sign Up</Button>
