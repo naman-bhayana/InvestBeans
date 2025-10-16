@@ -1,18 +1,26 @@
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/controllers/AuthContext";
 import { useNavigate } from "react-router-dom";
 import StockWidget from "./StockWidget";
 
 const DashboardView: React.FC = () => {
-  const { signOut } = useAuth();
   const navigate = useNavigate();
 
-  const handleSignOut = async () => {
-    await signOut(() => navigate("/"));
+  const handleBackToDashboard = () => {
+    navigate("/"); // Redirect to home page
   };
 
   return (
     <div className="container mx-auto px-6 py-10">
+      {/* Back to Dashboard button */}
+      <div className="mb-4">
+        <Button
+          onClick={handleBackToDashboard}
+          className="bg-accent text-white hover:bg-white hover:text-navy font-semibold transition-all shadow-md hover:shadow-lg hover:scale-105"
+        >
+          Back to Dashboard
+        </Button>
+      </div>
+
       <div className="bg-card border border-border rounded-xl p-6">
         <h1 className="text-2xl font-bold mb-2">
           Live Stock Dashboard
@@ -26,9 +34,6 @@ const DashboardView: React.FC = () => {
           <StockWidget symbol="AAPL" market="US" />
           <StockWidget symbol="TSLA" market="US" />
         </div>
-        <Button className="mt-6" onClick={handleSignOut}>
-          Sign Out
-        </Button>
       </div>
     </div>
   );
