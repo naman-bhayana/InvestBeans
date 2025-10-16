@@ -13,6 +13,7 @@ type User = {
 type AuthContextType = {
   user: User | null;
   loading: boolean;
+  isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -99,12 +100,15 @@ const signOut = async (callback?: () => void) => {
     if (callback) callback();
   }
 };
+  const isAuthenticated = !!user;
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, refreshUser }}>
+   <AuthContext.Provider value={{ user, loading, isAuthenticated, signIn, signUp, signOut, refreshUser }}>
       {children}
     </AuthContext.Provider>
+
   );
 };
+
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);

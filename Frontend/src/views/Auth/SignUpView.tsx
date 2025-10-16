@@ -17,7 +17,7 @@ const SignUpView = () => {
     setError(null);
     try {
       await signUp(name, email, password);
-      navigate("/dashboard");
+      navigate("/");
     } catch (err: any) {
       setError(err?.message ?? "Unable to sign up");
     }
