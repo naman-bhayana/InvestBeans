@@ -12,6 +12,10 @@ import SignInController from "@/controllers/SignInController";
 import SignUpController from "@/controllers/SignUpController";
 import ProtectedRoute from "@/controllers/ProtectedRoute";
 import { AuthProvider } from "@/controllers/AuthContext";
+import MarketsView from "@/views/MarketsView";
+import EducationView from "@/views/EducationView";
+import TeamView from "@/views/TeamView";
+import BlogsView from "@/views/BlogsView";
 
 const queryClient = new QueryClient();
 
@@ -24,18 +28,22 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomeController />} />
-            <Route path="/domestic" element={<DomesticController />} />
-            <Route path="/global" element={<GlobalController />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardController />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/signin" element={<SignInController />} />
-            <Route path="/signup" element={<SignUpController />} />
+          <Route path="/domestic" element={<DomesticController />} />
+          <Route path="/global" element={<GlobalController />} />
+          <Route path="/markets" element={<MarketsView />} />
+          <Route path="/education" element={<EducationView />} />
+          <Route path="/team" element={<TeamView />} />
+          <Route path="/blogs" element={<BlogsView />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardController />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/signin" element={<SignInController />} />
+          <Route path="/signup" element={<SignUpController />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFoundController />} />
         </Routes>

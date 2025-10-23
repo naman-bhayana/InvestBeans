@@ -1,3 +1,4 @@
+import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import StockWidget from "./StockWidget";
@@ -10,7 +11,8 @@ const DashboardView: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-10">
+    <Layout>
+      <div className="container mx-auto px-6 py-10">
       {/* Back to Dashboard button */}
       <div className="mb-4">
         <Button
@@ -35,7 +37,8 @@ const DashboardView: React.FC = () => {
           <StockWidget symbol="TSLA" market="US" />
         </div>
       </div>
-    </div>
+      </div>
+    </Layout>
   );
 };
 

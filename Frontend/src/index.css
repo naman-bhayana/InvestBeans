@@ -119,9 +119,23 @@ All colors MUST be HSL.
     animation: scaleIn 0.4s ease-out;
   }
 
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Ticker marquee */
-  .marquee { position: relative; }
-  .marquee-content { width: max-content; animation: ticker 25s linear infinite; }
+  .marquee { 
+    position: relative; 
+    animation: ticker 20s linear infinite;
+  }
+  .marquee.pause { 
+    animation-play-state: paused; 
+  }
+  .marquee-content { width: max-content; }
   .marquee-track { }
   .pause-on-hover:hover .marquee-content { animation-play-state: paused; }
 }
