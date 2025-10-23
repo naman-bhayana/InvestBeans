@@ -28,17 +28,31 @@ const Header = () => {
             </li>
           </ul>
         </div>
-        {isAuthenticated ? (
-          <Button onClick={signOut} className="bg-white text-navy hover:bg-accent hover:text-white font-semibold transition-all shadow-md hover:shadow-lg hover:scale-105">
-            Log out
-          </Button>
-        ) : (
-          <Link to="/signin">
-            <Button className="bg-white text-navy hover:bg-accent hover:text-white font-semibold transition-all shadow-md hover:shadow-lg hover:scale-105">
-              Sign in
+
+        {/* Buttons based on authentication */}
+        <div className="flex items-center gap-4">
+          {isAuthenticated ? (
+            <Button
+              onClick={signOut}
+              className="bg-white text-navy hover:bg-accent hover:text-white font-semibold transition-all shadow-md hover:shadow-lg hover:scale-105"
+            >
+              Log out
             </Button>
-          </Link>
-        )}
+          ) : (
+            <>
+              <Link to="/signin">
+                <Button className="bg-white text-navy hover:bg-accent hover:text-white font-semibold transition-all shadow-md hover:shadow-lg hover:scale-105">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button className="bg-accent text-white hover:bg-white hover:text-navy font-semibold transition-all shadow-md hover:shadow-lg hover:scale-105">
+                  Sign up
+                </Button>
+              </Link>
+            </>
+          )}
+        </div>
       </nav>
     </header>
   );
