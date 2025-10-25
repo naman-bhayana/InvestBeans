@@ -7,7 +7,6 @@ const errorHandler = (err, req, res, next) => {
     let statusCode = err.statusCode || 500;
     let message = err.message || "Internal Server Error";
 
-    // Log detailed error in console (Development)
     if (process.env.NODE_ENV === 'development') {
         console.log('\n' + '='.repeat(80));
         console.log('🔴 ERROR OCCURRED!');
@@ -41,7 +40,7 @@ const errorHandler = (err, req, res, next) => {
         statusCode = 400;
     }
 
-    // JWT Errors
+    
     if (err.name === 'JsonWebTokenError') {
         message = 'Invalid token. Please log in again!';
         statusCode = 401;
@@ -52,7 +51,7 @@ const errorHandler = (err, req, res, next) => {
         statusCode = 401;
     }
 
-    // Send error response
+
     res.status(statusCode).json({
         success: false,
         statusCode,
@@ -66,12 +65,10 @@ const errorHandler = (err, req, res, next) => {
     });
 };
 
-// Helper function to extract file and line number from stack trace
 const getErrorLocation = (stack) => {
     if (!stack) return 'Unknown location';
     
     const stackLines = stack.split('\n');
-    // Get the first line that contains file path (usually line 2)
     for (let i = 1; i < stackLines.length; i++) {
         const line = stackLines[i].trim();
         if (line.includes('at ')) {
@@ -81,7 +78,7 @@ const getErrorLocation = (stack) => {
     return 'Unknown location';
 };
 
-// Handle 404 routes
+
 const notFound = (req, res, next) => {
     const error = new Error(`Route not found - ${req.originalUrl}`);
     error.statusCode = 404;

@@ -15,13 +15,12 @@ app.use(express.json({ limit: "20kb" }));
 app.use(express.urlencoded({ extended: true, limit: "20kb" }));
 app.use(cookieParser());
 
-// Import routes
+
 import userRouter from './routes/user.routes.js';
 
-// API Routes
 app.use("/api/v1/users", userRouter);
 
-// Health check route
+
 app.get('/health', (req, res) => {
     res.status(200).json({ 
         success: true, 
@@ -30,10 +29,8 @@ app.get('/health', (req, res) => {
     });
 });
 
-// 404 Handler (must be after all routes)
 app.use(notFound);
 
-// Global Error Handler (must be last)
 app.use(errorHandler);
 
 export { app };
