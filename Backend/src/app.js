@@ -1,31 +1,50 @@
-// app.js - Updated
-
 import 'dotenv/config';
 import express from "express";
+import path from "path";
+import { fileURLToPath } from 'url';
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { errorHandler, notFound } from './middlewares/errorHandler.middleware.js';
 
-const app = express()
+const app = express();
 
-const IS_PROD = process.env.NODE_ENV === 'production';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import userRouter from './routes/user.routes.js';
+
+
+app.use("/api/v1/users", userRouter);
+
+if(process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+    app.get('*',(req,res)=>{
+        res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'));
+    })
+}
+
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true
-}))
+}));
 
-app.use(express.json({ limit: "20kb" }))
-app.use(express.urlencoded({ extended: true, limit: "20kb" }))
-app.use(cookieParser())
-
-// Import routes
-import userRouter from './routes/user.routes.js';
-
-
-// API Routes
-app.use("/api/v1/users", userRouter)
+app.use(express.json({ limit: "20kb" }));
+app.use(express.urlencoded({ extended: true, limit: "20kb" }));
+app.use(cookieParser());
 
 
 
+app.get('/health', (req, res) => {
+    res.status(200).json({ 
+        success: true, 
+        message: 'Server is running',
+        timestamp: new Date().toISOString()
+    });
+});
 
-export { app }
+
+app.use(notFound);
+app.use(errorHandler);
+
+export { app };
