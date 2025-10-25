@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
-        // Get token from multiple sources
+
         const token =
             req.cookies?.accessToken ||
             req.header("Authorization")?.replace("Bearer ", "");
@@ -14,7 +14,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
             throw new ApiError(401, "Access token is required");
         }
 
-        // Verify token
+ 
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);

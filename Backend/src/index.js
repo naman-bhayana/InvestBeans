@@ -23,7 +23,6 @@ if (missingEnvVars.length > 0) {
     process.exit(1);
 }
 
-
 process.on('uncaughtException', (err) => {
     console.error('\n' + '='.repeat(50));
     console.error(' UNCAUGHT EXCEPTION! Shutting down...');
@@ -41,9 +40,9 @@ connectDB()
         
         const server = app.listen(PORT, () => {
             console.log('='.repeat(50));
-            console.log(`⚙️  Server is running on port: ${PORT}`);
-            console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`🔗 URL: http://localhost:${PORT}`);
+            console.log(`  Server is running on port: ${PORT}`);
+            console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+            console.log(` URL: http://localhost:${PORT}`);
             console.log('='.repeat(50) + '\n');
         });
 
