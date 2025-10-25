@@ -35,7 +35,7 @@ app.get('/api/health', (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   
   // Frontend path
-  const frontendPath = path.join(__dirname, '../../Frontend/dist');
+  const frontendPath = path.join(__dirname, '../../Frontend/dist/index.html');
   
   console.log(' Environment:', process.env.NODE_ENV);
   console.log(' Frontend path:', frontendPath);
