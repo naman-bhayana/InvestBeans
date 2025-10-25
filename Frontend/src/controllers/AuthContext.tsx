@@ -27,21 +27,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState<boolean>(true);
    
 
-  const refreshUser = async () => {
-    try {
-      const { data } = await api.get('/api/v1/users/me'); 
-      setUser(data?.data || null);
-    } catch (err) {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const refreshUser = async () => {
+  //   try {
+  //     const { data } = await api.get('/api/v1/users/me'); 
+  //     setUser(data?.data || null);
+  //   } catch (err) {
+  //     setUser(null);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
+  // useEffect(() => {
    
-    refreshUser();
-  }, []);
+  //   refreshUser();
+  // }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -90,19 +90,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
   //   }
   // };
-const signOut = async (callback?: () => void) => {
-  try {
-    await api.post('/api/v1/users/logout');
-    setUser(null);
-    if (callback) callback(); 
-  } catch (err) {
-    setUser(null);
-    if (callback) callback();
-  }
-};
+ const signOut = async (callback?: () => void) => {
+    try {
+      await api.post('/api/v1/users/logout');
+      setUser(null);
+      if (typeof callback === 'function') callback();
+    } catch (err) {
+      setUser(null);
+      if (typeof callback === 'function') callback();
+    }
+  };
   const isAuthenticated = !!user;
   return (
-   <AuthContext.Provider value={{ user, loading, isAuthenticated, signIn, signUp, signOut, refreshUser }}>
+   <AuthContext.Provider value={{ user, loading, isAuthenticated, signIn, signUp, signOut, }}>
       {children}
     </AuthContext.Provider>
 
