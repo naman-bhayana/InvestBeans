@@ -57,7 +57,7 @@ const InsightCard = ({
         </h3>
 
         {/* Description */}
-        <p className="text-muted-foreground mb-6 leading-relaxed line-clamp-2 text-sm md:text-base">
+        <p className="text-muted-foreground mb-6 leading-relaxed line-clamp-3 text-sm md:text-base">
           {description}
         </p>
 
