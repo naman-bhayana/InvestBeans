@@ -189,4 +189,3 @@ const DomesticView = () => {
 
 export default DomesticView;
 
-

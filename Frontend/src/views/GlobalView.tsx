@@ -244,4 +244,3 @@ const GlobalView = () => {
 
 export default GlobalView;
 
-
