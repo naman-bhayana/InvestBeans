@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -9,18 +11,40 @@ import {
 import { useAuth } from "@/controllers/AuthContext";
 import MarketTicker from "./MarketTicker";
 import { useState } from "react";
-import { Menu, X, ChevronDown, ChevronUp, User } from "lucide-react";
+
+import { useNavigate, useLocation } from "react-router-dom";
+
+import { Menu, X, ChevronDown, User } from "lucide-react";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  function scrollToSection(id: string) {
+ 
+    if (location.pathname === "/team") {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    navigate("/team");
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+  }
+
   const { isAuthenticated, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileMarketsOpen, setMobileMarketsOpen] = useState(false);
   const [mobileDashboardsOpen, setMobileDashboardsOpen] = useState(false);
-  
-  // Desktop dropdown states
+  const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
+
+
   const [dashboardsOpen, setDashboardsOpen] = useState(false);
   const [marketsOpen, setMarketsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
     <div className="sticky top-0 z-50">
@@ -44,19 +68,22 @@ const Header = () => {
             </Link>
 
             <ul className="hidden md:flex items-center space-x-6">
+          
               <li>
-                <DropdownMenu open={dashboardsOpen} onOpenChange={setDashboardsOpen}>
+                <DropdownMenu open={aboutOpen} onOpenChange={setAboutOpen}>
                   <DropdownMenuTrigger asChild>
-                    <button 
+                    <button
                       className="font-medium hover:text-accent transition-colors px-2 py-1 rounded-md flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-accent/40"
-                      onMouseEnter={() => setDashboardsOpen(true)}
-                      onMouseLeave={() => setDashboardsOpen(false)}
+                      onMouseEnter={() => setAboutOpen(true)}
+                      onMouseLeave={() => setAboutOpen(false)}
+                      onClick={() => setAboutOpen((s) => !s)}
+                      aria-expanded={aboutOpen}
                     >
-                      Dashboards 
-                      <ChevronDown 
+                      About
+                      <ChevronDown
                         className={`w-4 h-4 opacity-80 transition-transform duration-300 ease-in-out ${
-                          dashboardsOpen ? 'rotate-180' : ''
-                        }`} 
+                          aboutOpen ? "rotate-180" : ""
+                        }`}
                       />
                     </button>
                   </DropdownMenuTrigger>
@@ -65,31 +92,135 @@ const Header = () => {
                     align="start"
                     sideOffset={6}
                     className="min-w-[220px] p-2 bg-white text-navy rounded-xl shadow-xl ring-1 ring-black/10 border border-white/10"
-                    onMouseEnter={() => setDashboardsOpen(true)}
-                    onMouseLeave={() => setDashboardsOpen(false)}
+                    onMouseEnter={() => setAboutOpen(true)}
+                    onMouseLeave={() => setAboutOpen(false)}
                   >
                     <DropdownMenuItem asChild>
-                      <Link to="/dashboard" className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition">
-                        InvestBeans Equity / US Stocks
-                      </Link>
+                      <button
+                        onClick={() => {
+                          scrollToSection("our-story");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Our Story
+                      </button>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => {
+                          scrollToSection("founder-journey");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Founder's Journey
+                      </button>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => {
+                          scrollToSection("mission");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Mission
+                      </button>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => {
+                          scrollToSection("vision");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Vision
+                      </button>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => {
+                          scrollToSection("team-members");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Meet Our Team
+                      </button>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => {
+                          scrollToSection("core-values");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Core Values
+                      </button>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => {
+                          scrollToSection("why-us");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Why Us
+                      </button>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => {
+                          scrollToSection("certifications");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Certifications
+                      </button>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => {
+                          scrollToSection("join");
+                          setAboutOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent/10 transition"
+                      >
+                        Join Our Mission
+                      </button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </li>
 
+          
               <li>
                 <DropdownMenu open={marketsOpen} onOpenChange={setMarketsOpen}>
                   <DropdownMenuTrigger asChild>
-                    <button 
+                    <button
                       className="font-medium hover:text-accent transition-colors px-2 py-1 rounded-md flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-accent/40"
                       onMouseEnter={() => setMarketsOpen(true)}
                       onMouseLeave={() => setMarketsOpen(false)}
+                      aria-expanded={marketsOpen}
                     >
-                      Markets 
-                      <ChevronDown 
+                      Markets
+                      <ChevronDown
                         className={`w-4 h-4 opacity-80 transition-transform duration-300 ease-in-out ${
-                          marketsOpen ? 'rotate-180' : ''
-                        }`} 
+                          marketsOpen ? "rotate-180" : ""
+                        }`}
                       />
                     </button>
                   </DropdownMenuTrigger>
@@ -102,17 +233,26 @@ const Header = () => {
                     onMouseLeave={() => setMarketsOpen(false)}
                   >
                     <DropdownMenuItem asChild>
-                      <Link to="/global" className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition">
+                      <Link
+                        to="/global"
+                        className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition"
+                      >
                         Global
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/domestic" className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition">
+                      <Link
+                        to="/domestic"
+                        className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition"
+                      >
                         Domestics
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/markets" className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition">
+                      <Link
+                        to="/markets"
+                        className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition"
+                      >
                         Commodities
                       </Link>
                     </DropdownMenuItem>
@@ -120,18 +260,58 @@ const Header = () => {
                 </DropdownMenu>
               </li>
 
+              {/* ---------- DASHBOARDS ---------- */}
               <li>
-                <Link to="/education" className="hover:text-accent transition-colors font-medium">
+                <DropdownMenu open={dashboardsOpen} onOpenChange={setDashboardsOpen}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="font-medium hover:text-accent transition-colors px-2 py-1 rounded-md flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                      onMouseEnter={() => setDashboardsOpen(true)}
+                      onMouseLeave={() => setDashboardsOpen(false)}
+                      aria-expanded={dashboardsOpen}
+                    >
+                      Dashboards
+                      <ChevronDown
+                        className={`w-4 h-4 opacity-80 transition-transform duration-300 ease-in-out ${
+                          dashboardsOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    align="start"
+                    sideOffset={6}
+                    className="min-w-[220px] p-2 bg-white text-navy rounded-xl shadow-xl ring-1 ring-black/10 border border-white/10"
+                    onMouseEnter={() => setDashboardsOpen(true)}
+                    onMouseLeave={() => setDashboardsOpen(false)}
+                  >
+                    <DropdownMenuItem asChild>
+                      <Link
+                        to="/dashboard"
+                        className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition"
+                      >
+                        InvestBeans Equity / US Stocks
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
+
+              <li>
+                <Link
+                  to="/education"
+                  className="hover:text-accent transition-colors font-medium"
+                >
                   Education
                 </Link>
               </li>
+
               <li>
-                <Link to="/team" className="hover:text-accent transition-colors font-medium">
-                  Team
-                </Link>
-              </li>
-              <li>
-                <Link to="/blogs" className="hover:text-accent transition-colors font-medium">
+                <Link
+                  to="/blogs"
+                  className="hover:text-accent transition-colors font-medium"
+                >
                   Blogs
                 </Link>
               </li>
@@ -164,8 +344,8 @@ const Header = () => {
                     className="min-w-[160px] p-2 bg-white text-navy rounded-xl shadow-xl ring-1 ring-black/10 border border-white/10"
                   >
                     <DropdownMenuItem asChild>
-                      <Link 
-                        to="/signin" 
+                      <Link
+                        to="/signin"
                         className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition"
                         onClick={() => setUserMenuOpen(false)}
                       >
@@ -173,8 +353,8 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link 
-                        to="/signup" 
+                      <Link
+                        to="/signup"
                         className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition"
                         onClick={() => setUserMenuOpen(false)}
                       >
@@ -205,16 +385,16 @@ const Header = () => {
                     className="min-w-[160px] p-2 bg-white text-navy rounded-xl shadow-xl ring-1 ring-black/10 border border-white/10"
                   >
                     <DropdownMenuItem asChild>
-                      <Link 
-                        to="/signin" 
+                      <Link
+                        to="/signin"
                         className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition"
                       >
                         Login
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link 
-                        to="/signup" 
+                      <Link
+                        to="/signup"
                         className="block px-3 py-2 rounded-md text-sm font-medium hover:bg-accent/10 transition"
                       >
                         Sign up
@@ -231,53 +411,67 @@ const Header = () => {
           <div className="md:hidden bg-navy border-t border-white/10">
             <div className="container mx-auto px-4 py-4">
               <ul className="space-y-2">
+                {/* ---------- ABOUT (mobile - expandable) ---------- */}
                 <li className="rounded-md overflow-hidden">
                   <button
-                    onClick={() => setMobileDashboardsOpen((s) => !s)}
+                    onClick={() => setMobileAboutOpen((s) => !s)}
                     className="w-full flex items-center justify-between text-left text-white hover:text-accent transition-colors font-medium py-3 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-accent/40"
-                    aria-expanded={mobileDashboardsOpen}
+                    aria-expanded={mobileAboutOpen}
                   >
-                    <span>Dashboards</span>
-                    <ChevronDown 
+                    <span className="font-medium">About</span>
+                    <ChevronDown
                       className={`w-4 h-4 transition-transform duration-300 ease-in-out ${
-                        mobileDashboardsOpen ? 'rotate-180' : ''
-                      }`} 
+                        mobileAboutOpen ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
                   <div
                     className={`mt-1 overflow-hidden transition-[max-height,opacity] duration-200 ease-in-out ${
-                      mobileDashboardsOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                      mobileAboutOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                     }`}
                   >
                     <ul className="bg-navy/90 rounded-md border border-white/5 px-2 py-2 space-y-1">
-                      <li>
-                        <Link
-                          to="/dashboard"
-                          className="block text-white/90 hover:text-accent transition-colors font-medium py-2 px-3 rounded-md"
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            setMobileDashboardsOpen(false);
-                          }}
-                        >
-                          InvestBeans Equity / US Stocks
-                        </Link>
-                      </li>
+                      {[
+                        { id: "our-story", label: "Our Story" },
+                        { id: "founder-journey", label: "Founder's Journey" },
+                        { id: "mission", label: "Mission" },
+                        { id: "vision", label: "Vision" },
+                        { id: "team-members", label: "Meet Our Team" },
+                        { id: "core-values", label: "Core Values" },
+                        { id: "why-us", label: "Why Us" },
+                        { id: "certifications", label: "Certifications" },
+                        { id: "join", label: "Join Our Mission" },
+                      ].map((it) => (
+                        <li key={it.id}>
+                          <button
+                            onClick={() => {
+                              scrollToSection(it.id);
+                              setIsMobileMenuOpen(false);
+                              setMobileAboutOpen(false);
+                            }}
+                            className="block text-white/90 hover:text-accent transition-colors font-medium py-2 px-3 rounded-md w-full text-left"
+                          >
+                            {it.label}
+                          </button>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </li>
 
+                {/* ---------- MARKETS (mobile) ---------- */}
                 <li className="rounded-md overflow-hidden">
                   <button
                     onClick={() => setMobileMarketsOpen((s) => !s)}
                     className="w-full flex items-center justify-between text-left text-white hover:text-accent transition-colors font-medium py-3 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-accent/40"
                     aria-expanded={mobileMarketsOpen}
                   >
-                    <span>Markets</span>
-                    <ChevronDown 
+                    <span className="font-medium">Markets</span>
+                    <ChevronDown
                       className={`w-4 h-4 transition-transform duration-300 ease-in-out ${
-                        mobileMarketsOpen ? 'rotate-180' : ''
-                      }`} 
+                        mobileMarketsOpen ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
@@ -327,6 +521,43 @@ const Header = () => {
                   </div>
                 </li>
 
+                {/* ---------- DASHBOARDS (mobile) ---------- */}
+                <li className="rounded-md overflow-hidden">
+                  <button
+                    onClick={() => setMobileDashboardsOpen((s) => !s)}
+                    className="w-full flex items-center justify-between text-left text-white hover:text-accent transition-colors font-medium py-3 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-accent/40"
+                    aria-expanded={mobileDashboardsOpen}
+                  >
+                    <span className="font-medium">Dashboards</span>
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-300 ease-in-out ${
+                        mobileDashboardsOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  <div
+                    className={`mt-1 overflow-hidden transition-[max-height,opacity] duration-200 ease-in-out ${
+                      mobileDashboardsOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <ul className="bg-navy/90 rounded-md border border-white/5 px-2 py-2 space-y-1">
+                      <li>
+                        <Link
+                          to="/dashboard"
+                          className="block text-white/90 hover:text-accent transition-colors font-medium py-2 px-3 rounded-md"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setMobileDashboardsOpen(false);
+                          }}
+                        >
+                          InvestBeans Equity / US Stocks
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+
                 <li>
                   <Link
                     to="/education"
@@ -334,16 +565,6 @@ const Header = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Education
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    to="/team"
-                    className="block text-white hover:text-accent transition-colors font-medium py-3 px-3 rounded-md"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Team
                   </Link>
                 </li>
 

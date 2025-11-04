@@ -5,11 +5,18 @@ import InsightCard from "@/components/InsightCard";
 import DeepDiveCard from "@/components/DeepDiveCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lightbulb, Mail, Sparkles, ArrowRight, TrendingUp, BookOpen, Activity } from "lucide-react";
+import {
+  Lightbulb,
+  Mail,
+  Sparkles,
+  ArrowRight,
+  TrendingUp,
+  BookOpen,
+  Activity,
+} from "lucide-react";
 import { useAuth } from "@/controllers/AuthContext";
 import StockWidget from "./StockWidget";
 import DummyChart from "@/components/DummyChart";
-
 
 type ActiveTab = "domestic" | "global";
 
@@ -53,20 +60,24 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
           <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/10 rounded-3xl"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-accent/8 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-accent/5 to-transparent rounded-full blur-2xl"></div>
-          
+
           <div className="relative z-10">
             {/* Enhanced Header */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12">
               <div className="mb-6 md:mb-0">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 mb-4">
                   <Activity className="w-4 h-4 text-accent" />
-                  <span className="text-sm font-medium text-accent">Live Data</span>
+                  <span className="text-sm font-medium text-accent">
+                    {activeTab === "domestic" ? "Market Live" : "Live Data"}
+                  </span>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent mb-3">
-                  Live Dashboard
+                  {activeTab === "domestic" ? "BharatPulse" : "Live Dashboard"}
                 </h2>
                 <p className="text-lg text-muted-foreground">
-                  Real-time market data and interactive charts at your fingertips
+                  {activeTab === "domestic"
+                    ? "“Navigate Bharat’s markets with live data, sharp analytics, and smart insights.”"
+                    : "Real-time market data and interactive charts at your fingertips."}
                 </p>
               </div>
               <div className="flex gap-2 bg-card/50 backdrop-blur-sm p-1 rounded-lg border border-border/50 shadow-lg">
@@ -88,7 +99,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 </Button>
               </div>
             </div>
-
             {/* Market Cards */}
             {activeTab === "domestic" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -208,22 +218,25 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
           <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/10 rounded-3xl"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-accent/10 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-accent/5 to-transparent rounded-full blur-2xl"></div>
-          
+
           <div className="relative z-10">
             {/* Enhanced Header */}
             <div className="text-center mb-12 md:mb-16">
               <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 mb-4 md:mb-6">
                 <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-accent" />
-                <span className="text-xs md:text-sm font-medium text-accent">Market Intelligence</span>
+                <span className="text-xs md:text-sm font-medium text-accent">
+                  Market Intelligence
+                </span>
               </div>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent mb-3 md:mb-4 px-4">
                 Decode the Market
               </h2>
               <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-                Expert insights and analysis to help you understand market movements and make informed investment decisions
+                Expert insights and analysis to help you understand market
+                movements and make informed investment decisions
               </p>
             </div>
-            
+
             {/* Mobile/Tablet: Enhanced responsive design */}
             <div className="block lg:hidden px-4">
               {activeTab === "domestic" ? (
@@ -274,10 +287,16 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 <div className="text-center">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/5 border border-green-200/50 mb-4">
                     <TrendingUp className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-700">Domestic Market Insights</span>
+                    <span className="text-sm font-medium text-green-700">
+                      Domestic Market Insights
+                    </span>
                   </div>
-                  <h3 className="text-3xl font-bold text-foreground mb-2">Indian Markets</h3>
-                  <p className="text-muted-foreground">Analysis of NSE, BSE, and sectoral performance</p>
+                  <h3 className="text-3xl font-bold text-foreground mb-2">
+                    Indian Markets
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Analysis of NSE, BSE, and sectoral performance
+                  </p>
                 </div>
                 <div className="space-y-8">
                   <InsightCard
@@ -304,10 +323,16 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 <div className="text-center">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/5 border border-blue-200/50 mb-4">
                     <TrendingUp className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-700">Global Market Insights</span>
+                    <span className="text-sm font-medium text-blue-700">
+                      Global Market Insights
+                    </span>
                   </div>
-                  <h3 className="text-3xl font-bold text-foreground mb-2">International Markets</h3>
-                  <p className="text-muted-foreground">Global economic trends and their impact on investments</p>
+                  <h3 className="text-3xl font-bold text-foreground mb-2">
+                    International Markets
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Global economic trends and their impact on investments
+                  </p>
                 </div>
                 <div className="space-y-8">
                   <InsightCard
@@ -333,7 +358,9 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
             {/* Call to Action */}
             <div className="mt-12 md:mt-16 text-center px-4">
               <div className="inline-flex items-center gap-2 px-4 md:px-6 py-3 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 hover:border-accent/30 transition-all duration-300 cursor-pointer group touch-manipulation active:scale-95">
-                <span className="text-accent font-semibold text-sm md:text-base">View All Market Insights</span>
+                <span className="text-accent font-semibold text-sm md:text-base">
+                  View All Market Insights
+                </span>
                 <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-accent group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
@@ -346,13 +373,15 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
           <div className="absolute inset-0 bg-gradient-to-br from-orange-50/30 via-transparent to-amber-50/20 rounded-3xl"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-orange-100/20 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-amber-100/15 to-transparent rounded-full blur-2xl"></div>
-          
+
           <div className="relative z-10">
             {/* Enhanced Header */}
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/10 to-amber-500/5 border border-orange-200/50 mb-6">
                 <Lightbulb className="w-4 h-4 text-orange-600" />
-                <span className="text-sm font-medium text-orange-700">Daily Wisdom</span>
+                <span className="text-sm font-medium text-orange-700">
+                  Daily Wisdom
+                </span>
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent mb-4">
                 Beans of Wisdom
@@ -369,8 +398,12 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-t-2xl p-6 text-white relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                   <div className="relative z-10">
-                    <h3 className="text-2xl md:text-3xl font-bold mb-2">One Bean of Wisdom!</h3>
-                    <p className="text-orange-100">Today's investment insight</p>
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                      One Bean of Wisdom!
+                    </h3>
+                    <p className="text-orange-100">
+                      Today's investment insight
+                    </p>
                   </div>
                 </div>
               </div>
@@ -390,10 +423,15 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                           <div className="absolute top-1/2 right-1/2 w-4 h-4 bg-blue-600 rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
                         </div>
                       </div>
-                      
+
                       <div>
-                        <h4 className="text-xl font-bold text-foreground mb-2">Karma: The Universe Never Forgets</h4>
-                        <p className="text-muted-foreground text-sm leading-relaxed">Every action has a result — good or bad — even if it comes later.</p>
+                        <h4 className="text-xl font-bold text-foreground mb-2">
+                          Karma: The Universe Never Forgets
+                        </h4>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          Every action has a result — good or bad — even if it
+                          comes later.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -401,9 +439,13 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                   {/* Center - Main Wisdom Content */}
                   <div className="lg:col-span-2 space-y-6">
                     <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-orange-200/50">
-                      <h5 className="text-lg font-bold text-foreground mb-4">Investment Karma</h5>
+                      <h5 className="text-lg font-bold text-foreground mb-4">
+                        Investment Karma
+                      </h5>
                       <p className="text-muted-foreground leading-relaxed mb-4">
-                        Every trade, decision, or risk carries its karma. Shortcuts and greed may work temporarily, but over time markets reward discipline and punish recklessness.
+                        Every trade, decision, or risk carries its karma.
+                        Shortcuts and greed may work temporarily, but over time
+                        markets reward discipline and punish recklessness.
                       </p>
                       <div className="flex items-center gap-2 text-sm text-orange-600 font-medium">
                         <span>Key Principle:</span>
@@ -414,7 +456,8 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                     {/* Bottom Quote */}
                     <div className="text-center bg-gradient-to-r from-orange-50 to-transparent rounded-lg p-4 border-l-4 border-orange-400">
                       <p className="text-lg italic text-foreground/80 font-medium">
-                        "In both karma and investing, you reap exactly what you sow."
+                        "In both karma and investing, you reap exactly what you
+                        sow."
                       </p>
                     </div>
                   </div>
@@ -427,7 +470,10 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                   <Lightbulb className="w-4 h-4 mr-2" />
                   Get Daily Wisdom
                 </Button>
-                <Button variant="outline" className="border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold px-8 py-3 rounded-full transition-all duration-300">
+                <Button
+                  variant="outline"
+                  className="border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold px-8 py-3 rounded-full transition-all duration-300"
+                >
                   Explore All Insights
                 </Button>
               </div>
@@ -441,19 +487,22 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
           <div className="absolute inset-0 bg-gradient-to-br from-accent/3 via-transparent to-accent/8 rounded-3xl"></div>
           <div className="absolute top-0 left-0 w-80 h-80 bg-gradient-to-br from-accent/8 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-accent/5 to-transparent rounded-full blur-2xl"></div>
-          
+
           <div className="relative z-10">
             {/* Enhanced Header */}
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 mb-6">
                 <BookOpen className="w-4 h-4 text-accent" />
-                <span className="text-sm font-medium text-accent">Research & Analysis</span>
+                <span className="text-sm font-medium text-accent">
+                  Research & Analysis
+                </span>
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent mb-4">
                 Deep Dives
               </h2>
               <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Comprehensive analysis and market forecasts from our expert research team
+                Comprehensive analysis and market forecasts from our expert
+                research team
               </p>
             </div>
 
@@ -482,7 +531,9 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
             {/* Call to Action */}
             <div className="mt-12 text-center">
               <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 hover:border-accent/30 transition-all duration-300 cursor-pointer group touch-manipulation active:scale-95">
-                <span className="text-accent font-semibold">Explore All Research</span>
+                <span className="text-accent font-semibold">
+                  Explore All Research
+                </span>
                 <ArrowRight className="w-4 h-4 text-accent group-hover:translate-x-1 transition-transform" />
               </div>
             </div>

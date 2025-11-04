@@ -5,7 +5,17 @@ const Footer = () => {
     <footer className="bg-gradient-to-br from-navy to-navy-light text-white py-16 mt-20 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
-      
+
+      {/* Disclaimer Section */}
+      <div className="container mx-auto px-6 mb-6 relative z-10">
+        <p className="text-sm md:text-base text-left leading-relaxed opacity-80">
+          <span className="font-semibold text-accent">Disclaimer:</span> InvestBeans provides educational content only and does not offer personalized investment advice. 
+          All trading and investing decisions are the sole responsibility of the individual. 
+          Investments in financial markets are subject to risk, and past performance does not indicate future results.
+        </p>
+        <hr className="border-white/20 mt-4" />
+      </div>
+
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div className="md:col-span-2">
@@ -31,6 +41,7 @@ const Footer = () => {
               </a>
             </div>
           </div>
+
           <div>
             <h3 className="text-lg font-semibold mb-4 text-accent">Quick Links</h3>
             <ul className="space-y-3 text-sm">
@@ -40,6 +51,7 @@ const Footer = () => {
               <li><a href="#" className="opacity-80 hover:opacity-100 hover:text-accent transition-all hover:translate-x-1 inline-block">Insights</a></li>
             </ul>
           </div>
+
           <div>
             <h3 className="text-lg font-semibold mb-4 text-accent">Resources</h3>
             <ul className="space-y-3 text-sm">
@@ -50,7 +62,7 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        
+
         <div className="border-t border-white/10 pt-8">
           <p className="text-center text-sm opacity-70">
             © 2024 InvestBeans. All rights reserved. Built with ❤️ for smart investors.
