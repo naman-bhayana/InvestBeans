@@ -8,8 +8,8 @@ const Footer = () => {
 
       {/* Disclaimer Section */}
       <div className="container mx-auto px-6 mb-6 relative z-10">
-        <p className="text-sm md:text-base text-left leading-relaxed opacity-80">
-          <span className="font-semibold text-accent">Disclaimer:</span> InvestBeans provides educational content only and does not offer personalized investment advice. 
+        <p className="text-sm md:text-base text-left leading-relaxed opacity-90">
+          <span className="font-bold text-accent">Disclaimer:</span> InvestBeans provides educational content only and does not offer personalized investment advice. 
           All trading and investing decisions are the sole responsibility of the individual. 
           Investments in financial markets are subject to risk, and past performance does not indicate future results.
         </p>

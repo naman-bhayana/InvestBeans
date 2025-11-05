@@ -17,6 +17,7 @@ import {
 import { useAuth } from "@/controllers/AuthContext";
 import StockWidget from "./StockWidget";
 import DummyChart from "@/components/DummyChart";
+import { useState,useEffect } from "react";
 
 type ActiveTab = "domestic" | "global";
 
@@ -27,6 +28,210 @@ type HomeViewProps = {
 
 const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
   const { isAuthenticated } = useAuth();
+  const [showAllInsights, setShowAllInsights] = useState(false);
+
+  // 12 Domestic insights (6 left + 6 right initially)
+  const domesticInsights = [
+    {
+      title: "Why Nifty50 dipped despite strong earnings?",
+      description: "Weakness in global markets and profit booking in certain sectors. Our analysts break down the key factors driving this unexpected movement and what it means for your portfolio...",
+      sentiment: "negative" as const,
+      readTime: "4 min read",
+      views: 2847,
+      category: "Domestic Analysis",
+    },
+    {
+      title: "Is it the right time to invest in Sensex stocks?",
+      description: "Wondering about equity valuations and interest rate outlooks for domestic markets. We analyze current market conditions and provide actionable insights for investors...",
+      sentiment: "positive" as const,
+      readTime: "5 min read",
+      views: 1923,
+      category: "Investment Strategy",
+    },
+    {
+      title: "Banking Sector Rally: What's Driving the Growth?",
+      description: "PSU banks and private banks showing strong momentum. Analysis of credit growth and NPA trends impacting the banking sector's performance...",
+      sentiment: "positive" as const,
+      readTime: "6 min read",
+      views: 3201,
+      category: "Sector Analysis",
+    },
+    {
+      title: "IT Stocks Under Pressure: Cause for Concern?",
+      description: "Tech sector facing headwinds from global slowdown. Expert analysis on recovery prospects and key factors that could trigger a turnaround...",
+      sentiment: "negative" as const,
+      readTime: "5 min read",
+      views: 2654,
+      category: "Technology",
+    },
+    {
+      title: "FMCG Sector: Defensive Play in Volatile Markets",
+      description: "Consumer staples showing resilience during market volatility. Analysis of consumption trends and margin pressures affecting FMCG companies...",
+      sentiment: "neutral" as const,
+      readTime: "4 min read",
+      views: 1876,
+      category: "Consumer Goods",
+    },
+    {
+      title: "Auto Sector Momentum: EV Revolution Impact",
+      description: "Traditional automakers vs EV startups in the race for market dominance. Market share analysis and future outlook for the automotive industry...",
+      sentiment: "positive" as const,
+      readTime: "7 min read",
+      views: 4123,
+      category: "Automobile",
+    },
+    {
+      title: "Pharma Stocks: Export Market Opportunities",
+      description: "Generic drug demand rising globally creating new opportunities. Analysis of key pharma companies' growth prospects and export potential...",
+      sentiment: "positive" as const,
+      readTime: "5 min read",
+      views: 2345,
+      category: "Pharmaceuticals",
+    },
+    {
+      title: "Real Estate Revival: Urban vs Tier-2 Cities",
+      description: "Property market showing signs of recovery across segments. Investment opportunities across geographies and key trends shaping the sector...",
+      sentiment: "neutral" as const,
+      readTime: "6 min read",
+      views: 1987,
+      category: "Real Estate",
+    },
+    {
+      title: "Metal Stocks Surge: Commodity Cycle Returns",
+      description: "Steel and aluminum prices rising on infrastructure push. Deep dive into metal sector fundamentals and global demand-supply dynamics...",
+      sentiment: "positive" as const,
+      readTime: "6 min read",
+      views: 3567,
+      category: "Metals & Mining",
+    },
+    {
+      title: "Telecom Sector: 5G Rollout Impact Analysis",
+      description: "Major telcos investing heavily in 5G infrastructure. Analysis of ARPU trends, subscriber growth, and long-term sector outlook...",
+      sentiment: "neutral" as const,
+      readTime: "5 min read",
+      views: 2789,
+      category: "Telecommunications",
+    },
+    {
+      title: "Energy Sector Transition: Green vs Traditional",
+      description: "Renewable energy companies gaining traction in portfolios. Comparing traditional energy giants with new-age green energy players...",
+      sentiment: "positive" as const,
+      readTime: "7 min read",
+      views: 3890,
+      category: "Energy",
+    },
+    {
+      title: "Infrastructure Boom: Stocks to Watch Now",
+      description: "Government spending driving infrastructure sector growth. Key companies benefiting from the capital expenditure cycle and future projects...",
+      sentiment: "positive" as const,
+      readTime: "6 min read",
+      views: 4234,
+      category: "Infrastructure",
+    },
+  ];
+
+  // 12 Global insights
+  const globalInsights = [
+    {
+      title: "How global cues are shaping domestic indices",
+      description: "Recent movements in U.S markets and Federal Reserve policy impact on global markets. Understanding the interconnectedness of global financial systems...",
+      sentiment: "neutral" as const,
+      readTime: "6 min read",
+      views: 3456,
+      category: "Global Markets",
+    },
+    {
+      title: "International market volatility and its effects",
+      description: "Understanding how global economic events influence investment decisions worldwide. A comprehensive analysis of current market dynamics and future outlook...",
+      sentiment: "negative" as const,
+      readTime: "7 min read",
+      views: 2134,
+      category: "Market Volatility",
+    },
+    {
+      title: "US Fed Rate Decision: Impact on Emerging Markets",
+      description: "Federal Reserve's monetary policy and its ripple effects on Asian and Indian markets. Expert analysis on how rate changes affect capital flows...",
+      sentiment: "neutral" as const,
+      readTime: "8 min read",
+      views: 4567,
+      category: "Global Economics",
+    },
+    {
+      title: "China's Economic Recovery: What It Means for India",
+      description: "Analyzing China's growth trajectory and implications for Indian exports and markets. Understanding trade dynamics and competitive advantages...",
+      sentiment: "positive" as const,
+      readTime: "6 min read",
+      views: 3890,
+      category: "Asian Markets",
+    },
+    {
+      title: "European Markets: Energy Crisis and Recovery",
+      description: "Europe's economic challenges and opportunities for global investors. Deep dive into policy responses and their impact on international markets...",
+      sentiment: "negative" as const,
+      readTime: "7 min read",
+      views: 2756,
+      category: "European Economy",
+    },
+    {
+      title: "Tech Giants Earnings: Global Market Sentiment",
+      description: "How FAANG stocks performance impacts global technology sector valuation. Analysis of quarterly results and future growth expectations...",
+      sentiment: "positive" as const,
+      readTime: "5 min read",
+      views: 5234,
+      category: "Technology",
+    },
+    {
+      title: "Oil Price Fluctuations and Market Dynamics",
+      description: "OPEC decisions, geopolitical tensions, and their impact on energy-dependent economies. Understanding supply-demand imbalances in crude markets...",
+      sentiment: "neutral" as const,
+      readTime: "6 min read",
+      views: 3421,
+      category: "Commodities",
+    },
+    {
+      title: "Dollar Strength: Implications for Global Trade",
+      description: "USD movements affecting emerging market currencies and trade balances. Analysis of currency volatility and its impact on international investments...",
+      sentiment: "negative" as const,
+      readTime: "7 min read",
+      views: 2987,
+      category: "Currency Markets",
+    },
+    {
+      title: "Japanese Market Revival: Nikkei at New Highs",
+      description: "Japan's stock market hitting multi-decade highs on corporate reforms. Understanding the factors behind the Japanese market resurgence...",
+      sentiment: "positive" as const,
+      readTime: "6 min read",
+      views: 3678,
+      category: "Asian Markets",
+    },
+    {
+      title: "UK Economy Post-Brexit: Market Analysis",
+      description: "British markets adapting to post-Brexit trade realities. Analysis of FTSE performance and opportunities in the UK market...",
+      sentiment: "neutral" as const,
+      readTime: "7 min read",
+      views: 2456,
+      category: "European Markets",
+    },
+    {
+      title: "Cryptocurrency Impact on Traditional Markets",
+      description: "Digital assets influence on global financial systems growing. Understanding the intersection of crypto and traditional market investments...",
+      sentiment: "neutral" as const,
+      readTime: "8 min read",
+      views: 4890,
+      category: "Digital Assets",
+    },
+    {
+      title: "Emerging Markets Outlook: Opportunities Ahead",
+      description: "Growth potential in developing economies attracting investors. Comparative analysis of key emerging markets and investment strategies...",
+      sentiment: "positive" as const,
+      readTime: "7 min read",
+      views: 3765,
+      category: "Emerging Markets",
+    },
+  ];
+
+  const visibleInsights = showAllInsights ? 12 : 6;
+
   return (
     <Layout>
       <Hero />
@@ -42,10 +247,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 Exclusive charts for subscribers
               </p>
             </div>
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="h-72 border border-border rounded-xl bg-background/50" />
-              <div className="h-72 border border-border rounded-xl bg-background/50" />
-            </div> */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <StockWidget symbol="RELIANCE" market="NSE" />
               <StockWidget symbol="TCS" market="NSE" />
@@ -54,15 +255,14 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
             </div>
           </section>
         )}
+
         {/* Live Dashboard */}
         <section className="mb-20 relative overflow-hidden">
-          {/* Background decorative elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/10 rounded-3xl"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-accent/8 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-accent/5 to-transparent rounded-full blur-2xl"></div>
 
           <div className="relative z-10">
-            {/* Enhanced Header */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12">
               <div className="mb-6 md:mb-0">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 mb-4">
@@ -76,7 +276,7 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 </h2>
                 <p className="text-lg text-muted-foreground">
                   {activeTab === "domestic"
-                    ? "“Navigate Bharat’s markets with live data, sharp analytics, and smart insights.”"
+                    ? "Navigate Bharat's markets with live data, sharp analytics, and smart insights."
                     : "Real-time market data and interactive charts at your fingertips."}
                 </p>
               </div>
@@ -99,7 +299,7 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 </Button>
               </div>
             </div>
-            {/* Market Cards */}
+
             {activeTab === "domestic" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <MarketCard
@@ -164,7 +364,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
               </div>
             )}
 
-            {/* Interactive Charts Section */}
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-foreground mb-6 text-center">
                 Market Performance Charts
@@ -197,7 +396,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
               </div>
             </div>
 
-            {/* Status Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/50 shadow-lg">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Sparkles className="w-4 h-4 text-accent" />
@@ -210,17 +408,14 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
             </div>
           </div>
         </section>
-        {/* <LiveDashboardPage/> */}
 
         {/* Decode the Market */}
         <section className="mb-20 relative overflow-hidden">
-          {/* Background decorative elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/10 rounded-3xl"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-accent/10 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-accent/5 to-transparent rounded-full blur-2xl"></div>
 
           <div className="relative z-10">
-            {/* Enhanced Header */}
             <div className="text-center mb-12 md:mb-16">
               <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 mb-4 md:mb-6">
                 <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-accent" />
@@ -237,131 +432,57 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
               </p>
             </div>
 
-            {/* Mobile/Tablet: Enhanced responsive design */}
-            <div className="block lg:hidden px-4">
-              {activeTab === "domestic" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                  <InsightCard
-                    title="Why Nifty50 dipped despite strong earnings?"
-                    description="Weakness in global markets and profit booking in certain sectors. Our analysts break down the key factors driving this unexpected movement and what it means for your portfolio."
-                    sentiment="negative"
-                    readTime="4 min read"
-                    views={2847}
-                    category="Domestic Analysis"
-                  />
-                  <InsightCard
-                    title="Is it the right time to invest in Sensex stocks?"
-                    description="Wondering about equity valuations and interest rate outlooks for domestic markets. We analyze current market conditions and provide actionable insights for investors."
-                    sentiment="positive"
-                    readTime="5 min read"
-                    views={1923}
-                    category="Investment Strategy"
-                  />
+            <div className="px-4">
+              <div className="text-center mb-12">
+                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${
+                  activeTab === "domestic" 
+                    ? "bg-gradient-to-r from-green-500/10 to-emerald-500/5 border border-green-200/50" 
+                    : "bg-gradient-to-r from-blue-500/10 to-indigo-500/5 border border-blue-200/50"
+                } mb-4`}>
+                  <TrendingUp className={`w-4 h-4 ${activeTab === "domestic" ? "text-green-600" : "text-blue-600"}`} />
+                  <span className={`text-sm font-medium ${activeTab === "domestic" ? "text-green-700" : "text-blue-700"}`}>
+                    {activeTab === "domestic" ? "Domestic Market Insights" : "Global Market Insights"}
+                  </span>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                  <InsightCard
-                    title="How global cues are shaping domestic indices"
-                    description="Recent movements in U.S markets and Federal Reserve policy impact on global markets. Understanding the interconnectedness of global financial markets."
-                    sentiment="neutral"
-                    readTime="6 min read"
-                    views={3456}
-                    category="Global Markets"
-                  />
-                  <InsightCard
-                    title="International market volatility and its effects"
-                    description="Understanding how global economic events influence investment decisions worldwide. A comprehensive analysis of current market dynamics and future outlook."
-                    sentiment="negative"
-                    readTime="7 min read"
-                    views={2134}
-                    category="Market Volatility"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Desktop: Enhanced side-by-side layout */}
-            <div className="hidden lg:grid lg:grid-cols-2 gap-8 xl:gap-12 px-4">
-              {/* Domestic News */}
-              <div className="space-y-8">
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/5 border border-green-200/50 mb-4">
-                    <TrendingUp className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-700">
-                      Domestic Market Insights
-                    </span>
-                  </div>
-                  <h3 className="text-3xl font-bold text-foreground mb-2">
-                    Indian Markets
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Analysis of NSE, BSE, and sectoral performance
-                  </p>
-                </div>
-                <div className="space-y-8">
-                  <InsightCard
-                    title="Why Nifty50 dipped despite strong earnings?"
-                    description="Weakness in global markets and profit booking in certain sectors. Our analysts break down the key factors driving this unexpected movement and what it means for your portfolio."
-                    sentiment="negative"
-                    readTime="4 min read"
-                    views={2847}
-                    category="Domestic Analysis"
-                  />
-                  <InsightCard
-                    title="Is it the right time to invest in Sensex stocks?"
-                    description="Wondering about equity valuations and interest rate outlooks for domestic markets. We analyze current market conditions and provide actionable insights for investors."
-                    sentiment="positive"
-                    readTime="5 min read"
-                    views={1923}
-                    category="Investment Strategy"
-                  />
-                </div>
+                <h3 className="text-3xl font-bold text-foreground mb-2">
+                  {activeTab === "domestic" ? "Indian Markets" : "International Markets"}
+                </h3>
+                <p className="text-muted-foreground">
+                  {activeTab === "domestic" 
+                    ? "Analysis of NSE, BSE, and sectoral performance" 
+                    : "Global economic trends and their impact on investments"}
+                </p>
               </div>
 
-              {/* Global News */}
-              <div className="space-y-8">
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/5 border border-blue-200/50 mb-4">
-                    <TrendingUp className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-700">
-                      Global Market Insights
-                    </span>
-                  </div>
-                  <h3 className="text-3xl font-bold text-foreground mb-2">
-                    International Markets
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Global economic trends and their impact on investments
-                  </p>
-                </div>
-                <div className="space-y-8">
-                  <InsightCard
-                    title="How global cues are shaping domestic indices"
-                    description="Recent movements in U.S markets and Federal Reserve policy impact on global markets. Understanding the interconnectedness of global financial markets."
-                    sentiment="neutral"
-                    readTime="6 min read"
-                    views={3456}
-                    category="Global Markets"
-                  />
-                  <InsightCard
-                    title="International market volatility and its effects"
-                    description="Understanding how global economic events influence investment decisions worldwide. A comprehensive analysis of current market dynamics and future outlook."
-                    sentiment="negative"
-                    readTime="7 min read"
-                    views={2134}
-                    category="Market Volatility"
-                  />
-                </div>
+              {/* Desktop: Two column layout (left-right) */}
+              <div className="hidden lg:grid lg:grid-cols-2 gap-8 xl:gap-12">
+                {(activeTab === "domestic" ? domesticInsights : globalInsights)
+                  .slice(0, visibleInsights)
+                  .map((insight, idx) => (
+                    <InsightCard key={idx} {...insight} />
+                  ))}
+              </div>
+
+              {/* Mobile/Tablet: Single column layout */}
+              <div className="block lg:hidden space-y-6">
+                {(activeTab === "domestic" ? domesticInsights : globalInsights)
+                  .slice(0, visibleInsights)
+                  .map((insight, idx) => (
+                    <InsightCard key={idx} {...insight} />
+                  ))}
               </div>
             </div>
 
             {/* Call to Action */}
             <div className="mt-12 md:mt-16 text-center px-4">
-              <div className="inline-flex items-center gap-2 px-4 md:px-6 py-3 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 hover:border-accent/30 transition-all duration-300 cursor-pointer group touch-manipulation active:scale-95">
+              <div
+                onClick={() => setShowAllInsights(!showAllInsights)}
+                className="inline-flex items-center gap-2 px-4 md:px-6 py-3 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 hover:border-accent/30 transition-all duration-300 cursor-pointer group touch-manipulation active:scale-95"
+              >
                 <span className="text-accent font-semibold text-sm md:text-base">
-                  View All Market Insights
+                  {showAllInsights ? "Show Less" : "View All Market Insights"}
                 </span>
-                <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-accent group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className={`w-3 h-3 md:w-4 md:h-4 text-accent group-hover:translate-x-1 transition-transform ${showAllInsights ? "rotate-90" : ""}`} />
               </div>
             </div>
           </div>
@@ -369,13 +490,11 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
 
         {/* Beans of Wisdom */}
         <section className="mb-20 relative overflow-hidden">
-          {/* Background decorative elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-orange-50/30 via-transparent to-amber-50/20 rounded-3xl"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-orange-100/20 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-amber-100/15 to-transparent rounded-full blur-2xl"></div>
 
           <div className="relative z-10">
-            {/* Enhanced Header */}
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/10 to-amber-500/5 border border-orange-200/50 mb-6">
                 <Lightbulb className="w-4 h-4 text-orange-600" />
@@ -391,9 +510,7 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
               </p>
             </div>
 
-            {/* Main Wisdom Card */}
             <div className="max-w-4xl mx-auto">
-              {/* Orange Banner */}
               <div className="relative mb-8">
                 <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-t-2xl p-6 text-white relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
@@ -408,13 +525,10 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 </div>
               </div>
 
-              {/* Main Content Card */}
               <div className="bg-gradient-to-br from-white to-orange-50/30 rounded-2xl border border-orange-200/30 shadow-xl hover:shadow-2xl transition-all duration-500 p-8 md:p-12">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                  {/* Left Side - Karma Concept */}
                   <div className="lg:col-span-1">
                     <div className="flex flex-col items-center text-center space-y-4">
-                      {/* Yin-Yang Symbol */}
                       <div className="relative w-24 h-24">
                         <div className="w-24 h-24 rounded-full border-4 border-blue-600 relative overflow-hidden">
                           <div className="absolute top-0 left-0 w-12 h-12 bg-blue-600 rounded-full"></div>
@@ -436,7 +550,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                     </div>
                   </div>
 
-                  {/* Center - Main Wisdom Content */}
                   <div className="lg:col-span-2 space-y-6">
                     <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-6 border border-orange-200/50">
                       <h5 className="text-lg font-bold text-foreground mb-4">
@@ -453,7 +566,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                       </div>
                     </div>
 
-                    {/* Bottom Quote */}
                     <div className="text-center bg-gradient-to-r from-orange-50 to-transparent rounded-lg p-4 border-l-4 border-orange-400">
                       <p className="text-lg italic text-foreground/80 font-medium">
                         "In both karma and investing, you reap exactly what you
@@ -464,7 +576,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                 <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
                   <Lightbulb className="w-4 h-4 mr-2" />
@@ -483,13 +594,11 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
 
         {/* Deep Dives */}
         <section className="mb-20 relative overflow-hidden">
-          {/* Background decorative elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-accent/3 via-transparent to-accent/8 rounded-3xl"></div>
           <div className="absolute top-0 left-0 w-80 h-80 bg-gradient-to-br from-accent/8 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-accent/5 to-transparent rounded-full blur-2xl"></div>
 
           <div className="relative z-10">
-            {/* Enhanced Header */}
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 mb-6">
                 <BookOpen className="w-4 h-4 text-accent" />
@@ -506,7 +615,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
               </p>
             </div>
 
-            {/* Enhanced Cards Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <DeepDiveCard
                 title="Sensex 2025 Forecast: What Analysts Predict"
@@ -528,7 +636,6 @@ const HomeView = ({ activeTab, onChangeTab }: HomeViewProps) => {
               />
             </div>
 
-            {/* Call to Action */}
             <div className="mt-12 text-center">
               <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 hover:border-accent/30 transition-all duration-300 cursor-pointer group touch-manipulation active:scale-95">
                 <span className="text-accent font-semibold">

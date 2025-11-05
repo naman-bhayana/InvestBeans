@@ -218,7 +218,7 @@ const TeamView = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
-                  <h2 className="text-lg sm:text-xl font-bold text-white">Our Mission</h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-white">Mission</h2>
                 </div>
                 <h3 className="text-sm sm:text-base font-semibold mb-3 text-white/95">Turning Market Complexity into Trading Clarity</h3>
                 <p className="text-xs sm:text-sm text-white/90 leading-relaxed">
@@ -236,7 +236,7 @@ const TeamView = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </div>
-                  <h2 className="text-lg sm:text-xl font-bold text-white">Our Vision</h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-white">Vision</h2>
                 </div>
                 <h3 className="text-sm sm:text-base font-semibold mb-3 text-white/95">Empowering Futures, Building Generational Prosperity</h3>
                 <p className="text-xs sm:text-sm text-white/90 leading-relaxed">
@@ -314,63 +314,144 @@ const TeamView = () => {
           </div>
 
           {/* Company Values */}
+        {/* Company Values - Connected Circles Design */}
           <div id="core-values" className="mb-8">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-navy mb-2">Our Core Values</h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-3">The principles that guide everything we do</p>
-              <div className="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
+            <div className="text-center mb-12">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-navy mb-4">Our Core Values</h2>
+              <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
             </div>
             
-            {/* Mobile View: Stacked Cards */}
-            <div className="block sm:hidden space-y-3">
-              {allValues.slice(0, showAllValues ? undefined : 6).map((value, idx) => (
-                <div key={idx} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-4 border border-gray-100">
-                  <div className="flex items-start gap-3">
-                    <div className={`flex-shrink-0 w-10 h-10 bg-gradient-to-br ${value.gradient} rounded-lg flex items-center justify-center`}>
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={value.icon} />
-                      </svg>
+            {/* Mobile View - Vertical List */}
+            <div className="block lg:hidden px-4">
+              <div className="space-y-6">
+                {allValues.slice(0, showAllValues ? undefined : 5).map((value, idx) => (
+                  <div key={idx} className="flex items-center gap-4">
+                    {/* Circle with Icon */}
+                    <div className={`relative flex-shrink-0 w-20 h-20 rounded-full bg-gradient-to-br ${value.gradient} flex items-center justify-center shadow-lg`}>
+                      <div className="w-16 h-16 rounded-full border-4 border-white/30 flex items-center justify-center">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={value.icon} />
+                        </svg>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-bold text-navy mb-1">{value.title}</h3>
-                      <p className="text-gray-600 text-xs leading-relaxed">{value.desc}</p>
+                    
+                    {/* Text */}
+                    <div className="flex-1">
+                      <h3 className="text-base font-bold text-navy mb-1">{value.title}</h3>
+                      <p className="text-xs text-gray-600 leading-relaxed">{value.desc}</p>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Tablet & Desktop View: Grid */}
-            <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {allValues.slice(0, showAllValues ? undefined : 6).map((value, idx) => (
-                <div key={idx} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-5 border border-gray-100 group">
-                  <div className={`w-12 h-12 bg-gradient-to-br ${value.gradient} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={value.icon} />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm sm:text-base font-bold text-navy mb-2">{value.title}</h3>
-                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">{value.desc}</p>
-                </div>
-              ))}
-            </div>
-            
-            {!showAllValues && (
-              <div className="text-center mt-6">
+                ))}
+              </div>
+              
+              {/* Show More/Less Button for Mobile */}
+              <div className="text-center mt-8">
                 <button 
-                  onClick={() => setShowAllValues(true)}
+                  onClick={() => setShowAllValues(!showAllValues)}
                   type="button"
-                  className="text-blue-600 hover:text-blue-700 font-semibold text-sm flex items-center gap-2 mx-auto"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-full font-semibold text-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
                 >
-                  View All Values
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span>{showAllValues ? 'Show Less' : `View All ${allValues.length} Values`}</span>
+                  <svg className={`w-4 h-4 transition-transform ${showAllValues ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
               </div>
-            )}
+            </div>
+            
+            {/* Desktop View - Connected Circles */}
+            <div className="hidden lg:block">
+              <div className="relative max-w-6xl mx-auto py-12">
+                {/* Top Row - 5 circles */}
+                <div className="flex justify-center items-center gap-8 mb-8">
+                  {allValues.slice(0, 5).map((value, idx) => (
+                    <div key={idx} className="relative group">
+                      {/* Connecting Line to bottom (except last) */}
+                      {idx < 5 && (
+                        <div className="absolute left-1/2 top-full w-0.5 h-16 bg-gradient-to-b from-gray-300 to-transparent -ml-px"></div>
+                      )}
+                      
+                      {/* Circle Container */}
+                      <div className="flex flex-col items-center">
+                        {/* Main Circle */}
+                        <div className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${value.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:shadow-2xl transition-all duration-300 cursor-pointer`}>
+                          {/* Inner Ring */}
+                          <div className="w-24 h-24 rounded-full border-4 border-white/30 flex items-center justify-center backdrop-blur-sm">
+                            <svg className="w-10 h-10 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={value.icon} />
+                            </svg>
+                          </div>
+                        </div>
+                        
+                        {/* Arrow */}
+                        <div className="mt-3 text-gray-400">
+                          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5z"/>
+                          </svg>
+                        </div>
+                        
+                        {/* Small Dot */}
+                        <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${value.gradient} shadow-md mt-3`}></div>
+                        
+                        {/* Title */}
+                        <h3 className="mt-4 text-sm font-bold text-navy text-center max-w-[120px] group-hover:text-blue-600 transition-colors">
+                          {value.title}
+                        </h3>
+                        
+                        {/* Description */}
+                        <p className="mt-2 text-xs text-gray-600 text-center max-w-[140px] leading-relaxed">
+                          {value.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Connecting Line - Horizontal */}
+                <div className="relative h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-8"></div>
+                
+                {/* Bottom Row - 4 circles */}
+                <div className="flex justify-center items-center gap-12">
+                  {allValues.slice(5, 9).map((value, idx) => (
+                    <div key={idx + 5} className="relative group">
+                      {/* Circle Container */}
+                      <div className="flex flex-col items-center">
+                        {/* Small Dot */}
+                        <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${value.gradient} shadow-md mb-3`}></div>
+                        
+                        {/* Arrow */}
+                        <div className="mb-3 text-gray-400 rotate-180">
+                          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 10l5 5 5-5z"/>
+                          </svg>
+                        </div>
+                        
+                        {/* Main Circle */}
+                        <div className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${value.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:shadow-2xl transition-all duration-300 cursor-pointer`}>
+                          {/* Inner Ring */}
+                          <div className="w-24 h-24 rounded-full border-4 border-white/30 flex items-center justify-center backdrop-blur-sm">
+                            <svg className="w-10 h-10 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={value.icon} />
+                            </svg>
+                          </div>
+                        </div>
+                        
+                        {/* Title */}
+                        <h3 className="mt-4 text-sm font-bold text-navy text-center max-w-[120px] group-hover:text-blue-600 transition-colors">
+                          {value.title}
+                        </h3>
+                        
+                        {/* Description */}
+                        <p className="mt-2 text-xs text-gray-600 text-center max-w-[140px] leading-relaxed">
+                          {value.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-
           {/* Why Us Section */}
           <div id="why-us" className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 mb-8 border border-gray-100">
             <div className="text-center mb-6 sm:mb-8">
