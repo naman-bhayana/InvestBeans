@@ -1,170 +1,299 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Layout from '@/components/Layout';
 
 const TeamView = () => {
+  // simple intersection observer reveal
+  const useReveal = () => {
+    const ref = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+      if (!ref.current) return;
+      const el = ref.current;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              el.classList.add('ib-revealed');
+              observer.unobserve(el);
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+      observer.observe(el);
+      return () => observer.disconnect();
+    }, []);
+    return ref;
+  };
+
+  const Reveal: React.FC<{ className?: string; delay?: number } & React.HTMLAttributes<HTMLDivElement>> = ({ className = '', delay = 0, children, ...rest }) => {
+    const ref = useReveal();
+    return (
+      <div
+        ref={ref}
+        style={{ transitionDelay: `${delay}ms` }}
+        className={`opacity-0 translate-y-6 ib-reveal will-change-transform ${className}`}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  };
+
+  const GlobalRevealStyles = () => (
+    <style>{`
+      .ib-reveal { transition: opacity 700ms ease, transform 700ms ease; }
+      .ib-revealed { opacity: 1 !important; transform: translateY(0) !important; }
+      @media (prefers-reduced-motion: reduce) {
+        .ib-reveal { transition: none !important; opacity: 1 !important; transform: none !important; }
+      }
+      html { scroll-behavior: smooth; }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { scrollbar-width: none; }
+    `}</style>
+  );
+
   // state now keyed by member id (string)
-  const [expandedBios, setExpandedBios] = useState({});
+  const [expandedBios, setExpandedBios] = useState<Record<string, boolean>>({});
   const [showAllValues, setShowAllValues] = useState(false);
   const [readMoreStory, setReadMoreStory] = useState(false);
   const [readMoreFounder, setReadMoreFounder] = useState(false);
+  const [activeSection, setActiveSection] = useState('our-story');
 
-  // Toggle by id (string)
-  const toggleBio = (id) => {
-    setExpandedBios(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+  // scrollspy for sticky sub-navigation
+  useEffect(() => {
+    const ids = [
+      'our-story',
+      'founder-journey',
+      'team-members',
+      'mission',
+      'core-values',
+      'why-us',
+      'certifications',
+      'join',
+    ];
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+    if (!elements.length) return;
+
+    const spy = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop);
+        if (visible[0]) {
+          setActiveSection((visible[0].target as HTMLElement).id);
+        }
+      },
+      { rootMargin: '-40% 0px -50% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+
+    elements.forEach((el) => spy.observe(el));
+    return () => spy.disconnect();
+  }, []);
+
+  const toggleBio = (id: string) => {
+    setExpandedBios((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Give each member a stable unique id (use uuid or stable string)
   const teamMembers = [
     {
       id: 'manu-tyagi',
       name: "Manu Tyagi",
       role: "Founder & NISM Certified Research Analyst",
-      image: "",
+      image: '',
       shortBio: "NISM-certified Research Analyst with over five years of trading experience in the Indian and U.S. equity markets.",
       bio: "Manu Tyagi, Founder of InvestBeans, is a NISM-certified Research Analyst with over five years of trading experience in the Indian and U.S. equity markets. Backed by a decade of corporate experience with leading multinational organizations, Manu brings strategic insight, analytical depth, and a mission-driven approach to simplifying market complexities.",
-      linkedin: "#"
+      linkedin: '#',
     },
     {
       id: 'mona-tyagi',
       name: "Mona Tyagi",
       role: "Co-Founder & NISM Certified Equity Derivatives Specialist",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80",
-      shortBio: "MBA in Finance (Gold Medalist) and NISM-certified Equity Derivatives Specialist with over 15 years of experience.",
-      bio: "Mona Tyagi is an NISM-certified Equity Derivatives Specialist and MBA in Finance from APJ Abdul Kalam University, where she graduated as a gold medalist. Beginning her career in 2009 with Mansukh Finance and Securities Ltd as a Derivatives Analyst, she has since developed expertise of over 15 years across commodities, forex, and Indian equity. With over a decade of experience, Mona brings deep market insight, strong risk management skills, and a data-driven approach to investment strategies. At InvestBeans, she empowers traders and investors with actionable research and practical guidance.",
-      linkedin: "#"
-    }
+      image:
+        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80',
+      shortBio: 'MBA in Finance (Gold Medalist) and NISM-certified Equity Derivatives Specialist with over 15 years of experience.',
+      bio: 'Mona Tyagi is an NISM-certified Equity Derivatives Specialist and MBA in Finance from APJ Abdul Kalam University, where she graduated as a gold medalist. Beginning her career in 2009 with Mansukh Finance and Securities Ltd as a Derivatives Analyst, she has since developed expertise of over 15 years across commodities, forex, and Indian equity. With over a decade of experience, Mona brings deep market insight, strong risk management skills, and a data-driven approach to investment strategies. At InvestBeans, she empowers traders and investors with actionable research and practical guidance.',
+      linkedin: '#',
+    },
   ];
 
   const allValues = [
-    { 
-      icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", 
-      title: "Integrity", 
-      desc: "Always doing the right thing, even when no one's watching",
-      gradient: "from-blue-500 to-blue-600"
-    },
-    { 
-      icon: "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z", 
-      title: "Transparency", 
-      desc: "Clear communication and complete honesty in every interaction",
-      gradient: "from-green-500 to-green-600"
-    },
-    { 
-      icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", 
-      title: "Client-Centricity", 
-      desc: "Prioritizing our learners' and clients' growth over everything else",
-      gradient: "from-purple-500 to-purple-600"
-    },
-    { 
-      icon: "M13 10V3L4 14h7v7l9-11h-7z", 
-      title: "Adaptability", 
-      desc: "Embracing change and aligning with ever-shifting market dynamics",
-      gradient: "from-orange-500 to-orange-600"
-    },
-    { 
-      icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", 
-      title: "Ethics & Accountability", 
-      desc: "Upholding the highest standards in education and guidance",
-      gradient: "from-red-500 to-red-600"
-    },
-    { 
-      icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z", 
-      title: "Excellence in Service", 
-      desc: "Striving for unmatched quality in every initiative",
-      gradient: "from-yellow-500 to-yellow-600"
-    },
-    { 
-      icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z", 
-      title: "Diversity & Inclusion", 
-      desc: "Encouraging participation from all backgrounds",
-      gradient: "from-indigo-500 to-indigo-600"
-    },
-    { 
-      icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z", 
-      title: "Sustainability", 
-      desc: "Promoting long-term growth over quick, speculative gains",
-      gradient: "from-teal-500 to-teal-600"
-    },
-    { 
-      icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z", 
-      title: "Trust", 
-      desc: "The most valuable investment we build every day",
-      gradient: "from-pink-500 to-pink-600"
-    }
+    { icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", title: 'Integrity', desc: "Always doing the right thing, even when no one's watching", gradient: 'from-blue-500 to-blue-600' },
+    { icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', title: 'Transparency', desc: 'Clear communication and complete honesty in every interaction', gradient: 'from-green-500 to-green-600' },
+    { icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', title: 'Client-Centricity', desc: "Prioritizing our learners' and clients' growth over everything else", gradient: 'from-purple-500 to-purple-600' },
+    { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: 'Adaptability', desc: 'Embracing change and aligning with ever-shifting market dynamics', gradient: 'from-orange-500 to-orange-600' },
+    { icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', title: 'Ethics & Accountability', desc: 'Upholding the highest standards in education and guidance', gradient: 'from-red-500 to-red-600' },
+    { icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z', title: 'Excellence in Service', desc: 'Striving for unmatched quality in every initiative', gradient: 'from-yellow-500 to-yellow-600' },
+    { icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', title: 'Diversity & Inclusion', desc: 'Encouraging participation from all backgrounds', gradient: 'from-indigo-500 to-indigo-600' },
+    { icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z', title: 'Sustainability', desc: 'Promoting long-term growth over quick, speculative gains', gradient: 'from-teal-500 to-teal-600' },
+    { icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z', title: 'Trust', desc: 'The most valuable investment we build every day', gradient: 'from-pink-500 to-pink-600' },
   ];
 
   return (
     <Layout>
+      <GlobalRevealStyles />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
-        <div className="relative bg-gradient-to-br from-navy via-blue-900 to-blue-800 text-white py-16 sm:py-20 lg:py-24 px-4 overflow-hidden">
-          {/* Animated Background */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-10 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-20 right-10 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-cyan-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="relative bg-gradient-to-br from-navy via-blue-900 to-blue-800 text-white px-4 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-24 -left-16 w-80 h-80 bg-blue-400/30 rounded-full blur-3xl"></div>
+            <div className="absolute top-24 right-0 w-96 h-96 bg-purple-400/25 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-1/3 w-72 h-72 bg-cyan-400/20 rounded-full blur-3xl"></div>
           </div>
-          
-          <div className="container mx-auto max-w-6xl text-center relative z-10">
-            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 leading-tight">
-              About <span className="text-blue-300">InvestBeans</span>
-            </h1>
-            <p className="text-sm sm:text-base lg:text-lg opacity-90 max-w-2xl mx-auto">
-              From passion to purpose — meet the people and principles behind InvestBeans
-            </p>
+          <div className="container mx-auto max-w-6xl relative z-10 py-16 sm:py-20 lg:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <Reveal className="lg:col-span-7 text-center lg:text-left">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight tracking-tight">
+                  About <span className="text-blue-300">InvestBeans</span>
+                </h1>
+                <p className="text-sm sm:text-base lg:text-lg opacity-90 max-w-2xl mx-auto lg:mx-0">
+                  From passion to purpose — meet the people and principles behind InvestBeans
+                </p>
+                <div className="mt-5 flex flex-wrap items-center justify-center lg:justify-start gap-2">
+                  <span className="text-[11px] sm:text-xs px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90">Education-first</span>
+                  <span className="text-[11px] sm:text-xs px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90">Ethical Research</span>
+                  <span className="text-[11px] sm:text-xs px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90">Risk-aware Strategies</span>
+                </div>
+              </Reveal>
+              <Reveal delay={120} className="lg:col-span-5">
+                <div className="mx-auto lg:mx-0 max-w-md bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 sm:p-6 shadow-xl hover:shadow-2xl transition-all">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600/90 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-blue-100 text-xs">Founded</p>
+                      <p className="text-white font-semibold">2024 • Education & Research</p>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+
+            <Reveal delay={200} className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="rounded-xl border border-white/15 bg-white/10 backdrop-blur-md p-3 text-center">
+                <p className="text-white text-sm font-semibold">Equities</p>
+                <p className="text-white/70 text-xs">Research & Education</p>
+              </div>
+              <div className="rounded-xl border border-white/15 bg-white/10 backdrop-blur-md p-3 text-center">
+                <p className="text-white text-sm font-semibold">Commodities</p>
+                <p className="text-white/70 text-xs">Market Insights</p>
+              </div>
+              <div className="rounded-xl border border-white/15 bg-white/10 backdrop-blur-md p-3 text-center">
+                <p className="text-white text-sm font-semibold">Forex</p>
+                <p className="text-white/70 text-xs">Structured Learning</p>
+              </div>
+              <div className="rounded-xl border border-white/15 bg-white/10 backdrop-blur-md p-3 text-center">
+                <p className="text-white text-sm font-semibold">Ethics</p>
+                <p className="text-white/70 text-xs">Transparency First</p>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Sticky sub-navigation */}
+        <div className="sticky top-0 z-30 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-100">
+          <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-2" role="tablist" aria-label="About page sections">
+              {[
+                { href: '#our-story', label: 'Our Story' },
+                { href: '#founder-journey', label: "Founder's Journey" },
+                { href: '#team-members', label: 'Team' },
+                { href: '#mission', label: 'Mission' },
+                { href: '#core-values', label: 'Core Values' },
+                { href: '#why-us', label: 'Why Us' },
+                { href: '#certifications', label: 'Certifications' },
+                { href: '#join', label: 'Join' },
+              ].map((item, idx) => (
+                <a
+                  key={idx}
+                  href={item.href}
+                  className={`text-xs sm:text-sm px-3 py-1.5 rounded-full border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+                    activeSection === item.href.replace('#', '')
+                      ? 'bg-navy text-white border-navy'
+                      : 'text-gray-600 hover:text-navy border-gray-200 hover:border-navy/30'
+                  }`}
+                  role="tab"
+                  aria-selected={activeSection === item.href.replace('#', '')}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {/* Our Story Section */}
-          <div id="our-story" className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 sm:p-8 mb-8 border border-gray-100">
+          <Reveal id="our-story" className="scroll-mt-24 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 p-6 sm:p-8 mb-8 border border-gray-100">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253" />
                 </svg>
               </div>
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-navy">Our Story</h2>
             </div>
-            <div className="text-gray-700 space-y-3 sm:space-y-4 text-sm sm:text-base leading-relaxed">
-              <p>
-                Founded in 2024, InvestBeans began as a humble WhatsApp group in 2023, where a few friends shared market learnings and stock insights. What started as a small circle of curiosity soon evolved into a structured educational and research initiative designed to help individuals understand and navigate financial markets with confidence.
-              </p>
-              {readMoreStory && (
-                <>
-                  <p>
-                    As the name suggests, InvestBeans is built on the idea that small, consistent efforts — like planting beans — when nurtured with patience and knowledge, can grow into a strong, fruitful foundation for the future. Much like a dedicated farmer tending to each seed, we guide learners in developing their understanding and approach to investments.
-                  </p>
-                  <p>
-                    We empower individuals and communities—particularly students, women, the self-employed, and private sector professionals—by providing research-based guidance and educational services across Equities, Commodities, and Forex markets.
-                  </p>
-                  <p>
-                    Our approach focuses on helping you make informed investment decisions, manage risks thoughtfully, and cultivate a future with potential for sustainable growth. At InvestBeans, we aim to equip learners for a lifetime of financial awareness and confidence, rather than promising specific returns.
-                  </p>
-                </>
-              )}
-              <button 
-                onClick={() => setReadMoreStory(!readMoreStory)}
-                type="button"
-                className="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-2 group mt-2 text-sm"
-              >
-                {readMoreStory ? 'Show Less' : 'Read More'}
-                <svg 
-                  className={`w-4 h-4 transition-transform ${readMoreStory ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 text-gray-700 space-y-3 sm:space-y-4 text-sm sm:text-base leading-relaxed">
+                <p>
+                  Founded in 2024, InvestBeans began as a humble WhatsApp group in 2023, where a few friends shared market learnings and stock insights. What started as a small circle of curiosity soon evolved into a structured educational and research initiative designed to help individuals understand and navigate financial markets with confidence.
+                </p>
+                {readMoreStory && (
+                  <>
+                    <p>
+                      As the name suggests, InvestBeans is built on the idea that small, consistent efforts — like planting beans — when nurtured with patience and knowledge, can grow into a strong, fruitful foundation for the future. Much like a dedicated farmer tending to each seed, we guide learners in developing their understanding and approach to investments.
+                    </p>
+                    <p>
+                      We empower individuals and communities—particularly students, women, the self-employed, and private sector professionals—by providing research-based guidance and educational services across Equities, Commodities, and Forex markets.
+                    </p>
+                    <p>
+                      Our approach focuses on helping you make informed investment decisions, manage risks thoughtfully, and cultivate a future with potential for sustainable growth. At InvestBeans, we aim to equip learners for a lifetime of financial awareness and confidence, rather than promising specific returns.
+                    </p>
+                  </>
+                )}
+
+                <button
+                  onClick={() => setReadMoreStory(!readMoreStory)}
+                  type="button"
+                  className="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-2 group mt-2 text-sm"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+                  {readMoreStory ? 'Show Less' : 'Read More'}
+                  <svg
+                    className={`w-4 h-4 transition-transform ${readMoreStory ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="lg:col-span-1 flex flex-col gap-4">
+                <div className="rounded-2xl bg-gradient-to-br from-white to-gray-50 p-4 border border-gray-100 shadow-sm">
+                  <h3 className="text-sm font-semibold text-navy">What we stand for</h3>
+                  <p className="text-xs text-gray-600 mt-2">Education, ethics and a long-term perspective are at the heart of InvestBeans.</p>
+                </div>
+
+                <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 p-4 border border-blue-100 shadow-sm">
+                  <h3 className="text-sm font-semibold text-indigo-700">Quick Facts</h3>
+                  <ul className="text-xs text-gray-600 mt-2 space-y-2">
+                    <li>Started as a community learning group (WhatsApp)</li>
+                    <li>Focus: Education-first financial research</li>
+                    <li>Audience: Students, women, self-employed, professionals</li>
+                  </ul>
+                </div>
+              </div>
             </div>
-          </div>
+          </Reveal>
 
           {/* Founder's Journey */}
-          <div id="founder-journey" className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-sm p-6 sm:p-8 mb-8 border border-blue-100">
+          <Reveal id="founder-journey" className="scroll-mt-24 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-sm p-6 sm:p-8 mb-8 border border-blue-100">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,44 +302,138 @@ const TeamView = () => {
               </div>
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-navy">Founder's Journey</h2>
             </div>
-            <div className="text-gray-700 space-y-3 sm:space-y-4 text-sm sm:text-base leading-relaxed">
-              <p>
-                Manu Tyagi, Founder of Investbeans, combines global exposure, corporate expertise, and market insight with a vision to simplify financial learning. A graduate of Delhi University and an alumnus of KV Moscow (Russia), he comes from a defence family background of air warriors, fostering discipline, precision, and integrity in his professional approach.
-              </p>
-              {readMoreFounder && (
-                <>
-                  <p>
-                    With over 10 years of corporate experience, the founder has worked closely with senior leadership and CXOs at top multinational organizations including WNS, DS Group, Radisson, and Publicis Groupe. His deep understanding of business operations and leadership strategy continues to shape his analytical and disciplined perspective on market behavior.
-                  </p>
-                  <p>
-                    Since 2020, Manu has been actively trading in both Indian and U.S. equity markets, developing structured strategies focused on ethical investing, research-backed decisions, and risk management. As a NISM-certified Research Analyst, he brings professionalism and credibility to every educational initiative under Investbeans.
-                  </p>
-                  <p>
-                    Through Investbeans, he envisions a platform that bridges the gap between curiosity and confidence — helping individuals understand markets logically, act strategically, and grow sustainably.
-                  </p>
-                </>
-              )}
-              <button 
-                onClick={() => setReadMoreFounder(!readMoreFounder)}
-                type="button"
-                className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-2 group mt-2 text-sm"
-              >
-                {readMoreFounder ? 'Show Less' : 'Read More'}
-                <svg 
-                  className={`w-4 h-4 transition-transform ${readMoreFounder ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-            </div>
-          </div>
 
-          {/* Mission & Vision */}
-          <div id="mission" className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <div className="lg:col-span-5 relative">
+                <div className="rounded-2xl bg-white shadow-sm border border-indigo-100 p-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-bold">MT</div>
+                    <div>
+                      <p className="text-xs text-indigo-600 font-semibold">About the Founder</p>
+                      <p className="text-sm text-gray-700 font-medium">Manu Tyagi</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600">A disciplined background, corporate experience and market practice—bringing a unique blend of rigor and empathy to education.</p>
+                </div>
+
+                <div className="mt-5 p-4 rounded-2xl border border-dashed border-indigo-100 bg-indigo-50 text-xs text-indigo-700">
+                  <strong>Timeline</strong>
+                  <ul className="mt-3 space-y-2">
+                    <li><span className="font-semibold">2009</span> - Began work in derivatives & commodities</li>
+                    <li><span className="font-semibold">2020</span> - Active trading across Indian & U.S. markets</li>
+                    <li><span className="font-semibold">NISM</span> - Research Analyst Certification</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="lg:col-span-7 text-gray-700 space-y-3 sm:space-y-4 text-sm sm:text-base leading-relaxed">
+                <p>
+                  Manu Tyagi, Founder of Investbeans, combines global exposure, corporate expertise, and market insight with a vision to simplify financial learning. A graduate of Delhi University and an alumnus of KV Moscow (Russia), he comes from a defence family background of air warriors, fostering discipline, precision, and integrity in his professional approach.
+                </p>
+                {readMoreFounder && (
+                  <>
+                    <p>
+                      With over 10 years of corporate experience, the founder has worked closely with senior leadership and CXOs at top multinational organizations including WNS, DS Group, Radisson, and Publicis Groupe. His deep understanding of business operations and leadership strategy continues to shape his analytical and disciplined perspective on market behavior.
+                    </p>
+                    <p>
+                      Since 2020, Manu has been actively trading in both Indian and U.S. equity markets, developing structured strategies focused on ethical investing, research-backed decisions, and risk management.
+                    </p>
+                  </>
+                )}
+
+                <button
+                  onClick={() => setReadMoreFounder(!readMoreFounder)}
+                  type="button"
+                  className="text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-2 group mt-2 text-sm"
+                >
+                  {readMoreFounder ? 'Show Less' : 'Read More'}
+                  <svg
+                    className={`w-4 h-4 transition-transform ${readMoreFounder ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Team Members - MOVED before Mission (per request) */}
+           <div id="team-members" className="scroll-mt-24 mb-8">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-navy mb-2">Meet Our Team</h2>
+                <p className="text-sm sm:text-base text-gray-600 mb-3">The experts driving InvestBeans forward</p>
+                <div className="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                {teamMembers.map((member, idx) => (
+                  <Reveal key={member.id} delay={idx * 90} className="group relative rounded-2xl overflow-hidden">
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/20 via-purple-500/10 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100">
+                    <div className="relative overflow-hidden">
+                      {member.image ? (
+                        <img 
+                          src={member.image} 
+                          alt={member.name}
+                          className="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-700"
+                          onError={(e) => {
+                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=3b82f6&color=ffffff&size=512`;
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-56 sm:h-64 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                          <div className="text-white text-5xl sm:text-6xl font-bold">
+                            {member.name.split(' ').map(n => n[0]).join('')}
+                          </div>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    </div>
+                    <div className="p-5 sm:p-6">
+                      <h3 className="text-lg sm:text-xl font-bold text-navy mb-1">{member.name}</h3>
+                      <p className="text-blue-600 font-medium mb-3 sm:mb-4 text-xs sm:text-sm">{member.role}</p>
+                      <p id={`bio-${member.id}`} className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
+                        {expandedBios[member.id] ? member.bio : member.shortBio}
+                      </p>
+                      <button 
+                        type="button"
+                        onClick={() => toggleBio(member.id)}
+                        className="text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm flex items-center gap-1 mb-3 sm:mb-4"
+                        aria-expanded={!!expandedBios[member.id]}
+                        aria-controls={`bio-${member.id}`}
+                      >
+                        {expandedBios[member.id] ? 'Show Less' : 'Read More'}
+                        <svg 
+                          className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${expandedBios[member.id] ? 'rotate-180' : ''}`} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      <a 
+                        href={member.linkedin}
+                        className="inline-flex items-center text-gray-700 hover:text-blue-600 font-medium transition-colors text-xs sm:text-sm group/link"
+                      >
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover/link:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        Connect on LinkedIn
+                      </a>
+                    </div>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+
+
+          {/* Mission & Vision - MOVED after Team */}
+          <div id="mission" className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Reveal className="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-100">
               <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-6 sm:p-7">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3">
@@ -225,9 +448,9 @@ const TeamView = () => {
                   Investbeans strives to transform the complexities of financial markets into simple, actionable, and educational insights. Our mission is to make trading and investing an accessible journey of growth — supported by structured learning, guided strategies, and a strong foundation in financial awareness.
                 </p>
               </div>
-            </div>
+            </Reveal>
 
-            <div id="vision" className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100">
+            <Reveal id="vision" className="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-500 overflow-hidden border border-gray-100">
               <div className="bg-gradient-to-br from-green-600 to-green-700 p-6 sm:p-7">
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3">
@@ -243,90 +466,22 @@ const TeamView = () => {
                   Our vision is to empower individuals across all walks of life — women, youth, self-employed, and working professionals — to achieve financial independence through education and ethical practices. By promoting awareness, discipline, and resilience, we aim to create lasting prosperity.
                 </p>
               </div>
-            </div>
+            </Reveal>
           </div>
 
-          {/* Team Members */}
-          <div id="team-members" className="mb-8">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-navy mb-2">Meet Our Team</h2>
-              <p className="text-sm sm:text-base text-gray-600 mb-3">The experts driving InvestBeans forward</p>
-              <div className="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
-              {teamMembers.map((member) => (
-                <div key={member.id} className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100">
-                  <div className="relative overflow-hidden">
-                    {member.image ? (
-                      <img 
-                        src={member.image} 
-                        alt={member.name}
-                        className="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => {
-                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=3b82f6&color=ffffff&size=512`;
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-56 sm:h-64 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                        <div className="text-white text-5xl sm:text-6xl font-bold">
-                          {member.name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                  </div>
-                  <div className="p-5 sm:p-6">
-                    <h3 className="text-lg sm:text-xl font-bold text-navy mb-1">{member.name}</h3>
-                    <p className="text-blue-600 font-medium mb-3 sm:mb-4 text-xs sm:text-sm">{member.role}</p>
-                    <p id={`bio-${member.id}`} className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
-                      {expandedBios[member.id] ? member.bio : member.shortBio}
-                    </p>
-                    <button 
-                      type="button"
-                      onClick={() => toggleBio(member.id)}
-                      className="text-blue-600 hover:text-blue-700 font-semibold text-xs sm:text-sm flex items-center gap-1 mb-3 sm:mb-4"
-                      aria-expanded={!!expandedBios[member.id]}
-                      aria-controls={`bio-${member.id}`}
-                    >
-                      {expandedBios[member.id] ? 'Show Less' : 'Read More'}
-                      <svg 
-                        className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${expandedBios[member.id] ? 'rotate-180' : ''}`} 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    <a 
-                      href={member.linkedin}
-                      className="inline-flex items-center text-gray-700 hover:text-blue-600 font-medium transition-colors text-xs sm:text-sm group/link"
-                    >
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover/link:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                      </svg>
-                      Connect on LinkedIn
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Company Values */}
-        {/* Company Values - Connected Circles Design */}
-          <div id="core-values" className="mb-8">
+          {/* Company Values (unchanged content) */}
+          {/* Company Values - Connected Circles Design */}
+          <Reveal id="core-values" className="scroll-mt-24 mb-8">
             <div className="text-center mb-12">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-navy mb-4">Our Core Values</h2>
               <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
             </div>
-            
+
             {/* Mobile View - Vertical List */}
             <div className="block lg:hidden px-4">
               <div className="space-y-6">
                 {allValues.slice(0, showAllValues ? undefined : 5).map((value, idx) => (
-                  <div key={idx} className="flex items-center gap-4">
-                    {/* Circle with Icon */}
+                  <div key={idx} className="flex items-center gap-4 transition-transform duration-500 hover:translate-x-1">
                     <div className={`relative flex-shrink-0 w-20 h-20 rounded-full bg-gradient-to-br ${value.gradient} flex items-center justify-center shadow-lg`}>
                       <div className="w-16 h-16 rounded-full border-4 border-white/30 flex items-center justify-center">
                         <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -334,8 +489,7 @@ const TeamView = () => {
                         </svg>
                       </div>
                     </div>
-                    
-                    {/* Text */}
+
                     <div className="flex-1">
                       <h3 className="text-base font-bold text-navy mb-1">{value.title}</h3>
                       <p className="text-xs text-gray-600 leading-relaxed">{value.desc}</p>
@@ -343,10 +497,9 @@ const TeamView = () => {
                   </div>
                 ))}
               </div>
-              
-              {/* Show More/Less Button for Mobile */}
+
               <div className="text-center mt-8">
-                <button 
+                <button
                   onClick={() => setShowAllValues(!showAllValues)}
                   type="button"
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-full font-semibold text-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
@@ -358,47 +511,38 @@ const TeamView = () => {
                 </button>
               </div>
             </div>
-            
+
             {/* Desktop View - Connected Circles */}
             <div className="hidden lg:block">
               <div className="relative max-w-6xl mx-auto py-12">
-                {/* Top Row - 5 circles */}
                 <div className="flex justify-center items-center gap-8 mb-8">
                   {allValues.slice(0, 5).map((value, idx) => (
                     <div key={idx} className="relative group">
-                      {/* Connecting Line to bottom (except last) */}
                       {idx < 5 && (
                         <div className="absolute left-1/2 top-full w-0.5 h-16 bg-gradient-to-b from-gray-300 to-transparent -ml-px"></div>
                       )}
-                      
-                      {/* Circle Container */}
+
                       <div className="flex flex-col items-center">
-                        {/* Main Circle */}
-                        <div className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${value.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:shadow-2xl transition-all duration-300 cursor-pointer`}>
-                          {/* Inner Ring */}
+                        <div className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${value.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:shadow-2xl transition-all duration-500 cursor-pointer`}>
                           <div className="w-24 h-24 rounded-full border-4 border-white/30 flex items-center justify-center backdrop-blur-sm">
-                            <svg className="w-10 h-10 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-10 h-10 text-white group-hover:scale-110 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={value.icon} />
                             </svg>
                           </div>
                         </div>
-                        
-                        {/* Arrow */}
+
                         <div className="mt-3 text-gray-400">
                           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M7 10l5 5 5-5z"/>
+                            <path d="M7 10l5 5 5-5z" />
                           </svg>
                         </div>
-                        
-                        {/* Small Dot */}
+
                         <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${value.gradient} shadow-md mt-3`}></div>
-                        
-                        {/* Title */}
+
                         <h3 className="mt-4 text-sm font-bold text-navy text-center max-w-[120px] group-hover:text-blue-600 transition-colors">
                           {value.title}
                         </h3>
-                        
-                        {/* Description */}
+
                         <p className="mt-2 text-xs text-gray-600 text-center max-w-[140px] leading-relaxed">
                           {value.desc}
                         </p>
@@ -406,42 +550,33 @@ const TeamView = () => {
                     </div>
                   ))}
                 </div>
-                
-                {/* Connecting Line - Horizontal */}
+
                 <div className="relative h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-8"></div>
-                
-                {/* Bottom Row - 4 circles */}
+
                 <div className="flex justify-center items-center gap-12">
                   {allValues.slice(5, 9).map((value, idx) => (
                     <div key={idx + 5} className="relative group">
-                      {/* Circle Container */}
                       <div className="flex flex-col items-center">
-                        {/* Small Dot */}
                         <div className={`w-4 h-4 rounded-full bg-gradient-to-br ${value.gradient} shadow-md mb-3`}></div>
-                        
-                        {/* Arrow */}
+
                         <div className="mb-3 text-gray-400 rotate-180">
                           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M7 10l5 5 5-5z"/>
+                            <path d="M7 10l5 5 5-5z" />
                           </svg>
                         </div>
-                        
-                        {/* Main Circle */}
-                        <div className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${value.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:shadow-2xl transition-all duration-300 cursor-pointer`}>
-                          {/* Inner Ring */}
+
+                        <div className={`relative w-28 h-28 rounded-full bg-gradient-to-br ${value.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:shadow-2xl transition-all duration-500 cursor-pointer`}>
                           <div className="w-24 h-24 rounded-full border-4 border-white/30 flex items-center justify-center backdrop-blur-sm">
-                            <svg className="w-10 h-10 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-10 h-10 text-white group-hover:scale-110 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={value.icon} />
                             </svg>
                           </div>
                         </div>
-                        
-                        {/* Title */}
+
                         <h3 className="mt-4 text-sm font-bold text-navy text-center max-w-[120px] group-hover:text-blue-600 transition-colors">
                           {value.title}
                         </h3>
-                        
-                        {/* Description */}
+
                         <p className="mt-2 text-xs text-gray-600 text-center max-w-[140px] leading-relaxed">
                           {value.desc}
                         </p>
@@ -451,9 +586,10 @@ const TeamView = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Reveal>
+
           {/* Why Us Section */}
-          <div id="why-us" className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 mb-8 border border-gray-100">
+          <Reveal id="why-us" className="scroll-mt-24 bg-white rounded-2xl shadow-sm p-6 sm:p-8 mb-8 border border-gray-100">
             <div className="text-center mb-6 sm:mb-8">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-navy mb-2">Why Choose InvestBeans?</h2>
               <p className="text-sm sm:text-base text-gray-600 max-w-3xl mx-auto mb-3">
@@ -461,18 +597,17 @@ const TeamView = () => {
               </p>
               <div className="w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
             </div>
-            
-            {/* Mobile View: Stacked */}
+
             <div className="block sm:hidden space-y-3">
               {[
-                { title: "No Fake Promotions", desc: "No marketing gimmicks — we let our knowledge and your own results speak for itself" },
-                { title: "Research-Backed Insights", desc: "Focus on education and research-backed insights instead of blind tips" },
-                { title: "Educational Guidance", desc: "Guidance on swing/positional trading strategies that promotes sensible risk-taking and market understanding" },
-                { title: "Community-First", desc: "Empowering traders and investors through learning and collaborative growth" },
-                { title: "Holistic Support", desc: "From equity, commodity to forex, we educate and research across multiple domains" },
-                { title: "Growth Platform", desc: "Investbeans isn't just advisory — it's a platform for growth, learning, and empowerment" }
+                { title: 'No Fake Promotions', desc: 'No marketing gimmicks — we let our knowledge and your own results speak for itself' },
+                { title: 'Research-Backed Insights', desc: 'Focus on education and research-backed insights instead of blind tips' },
+                { title: 'Educational Guidance', desc: 'Guidance on swing/positional trading strategies that promotes sensible risk-taking and market understanding' },
+                { title: 'Community-First', desc: 'Empowering traders and investors through learning and collaborative growth' },
+                { title: 'Holistic Support', desc: 'From equity, commodity to forex, we educate and research across multiple domains' },
+                { title: 'Growth Platform', desc: "Investbeans isn't just advisory — it's a platform for growth, learning, and empowerment" },
               ].map((item, idx) => (
-                <div key={idx} className="flex items-start bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 border border-green-100">
+                <Reveal key={idx} delay={idx * 80} className="flex items-start bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 border border-green-100 transition-transform duration-500 hover:-translate-y-0.5">
                   <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3 mt-0.5">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -482,23 +617,21 @@ const TeamView = () => {
                     <h3 className="font-bold text-navy mb-1 text-sm">{item.title}</h3>
                     <p className="text-gray-600 text-xs leading-relaxed">{item.desc}</p>
                   </div>
-                </div>
+                </Reveal>
               ))}
             </div>
-            
-            {/* Tablet & Desktop View: Grid */}
+
             <div className="hidden sm:grid sm:grid-cols-2 gap-4">
               {[
-
-                { title: "No Fake Promotions", desc: "No marketing gimmicks — we let our knowledge and your own results speak for itself" },
-                { title: "Research-Backed Insights", desc: "Focus on education and research-backed insights instead of blind tips" },
-                { title: "Educational Guidance", desc: "Guidance on swing/positional trading strategies that promotes sensible risk-taking and market understanding" },
-                { title: "Community-First", desc: "Empowering traders and investors through learning and collaborative growth" },
-                { title: "Holistic Support", desc: "From equity, commodity to forex, we educate and research across multiple domains" },
-                { title: "Growth Platform", desc: "Investbeans isn't just advisory — it's a platform for growth, learning, and empowerment" }
+                { title: 'No Fake Promotions', desc: 'No marketing gimmicks — we let our knowledge and your own results speak for itself' },
+                { title: 'Research-Backed Insights', desc: 'Focus on education and research-backed insights instead of blind tips' },
+                { title: 'Educational Guidance', desc: 'Guidance on swing/positional trading strategies that promotes sensible risk-taking and market understanding' },
+                { title: 'Community-First', desc: 'Empowering traders and investors through learning and collaborative growth' },
+                { title: 'Holistic Support', desc: 'From equity, commodity to forex, we educate and research across multiple domains' },
+                { title: 'Growth Platform', desc: "Investbeans isn't just advisory — it's a platform for growth, learning, and empowerment" },
               ].map((item, idx) => (
-                <div key={idx} className="flex items-start bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 sm:p-5 hover:shadow-md transition-all border border-green-100 group">
-                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 mt-0.5 group-hover:scale-110 transition-transform">
+                <Reveal key={idx} delay={idx * 80} className="flex items-start bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 sm:p-5 hover:shadow-md transition-all duration-500 border border-green-100 group hover:-translate-y-0.5">
+                  <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4 mt-0.5 group-hover:scale-110 transition-transform duration-500">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
@@ -507,13 +640,13 @@ const TeamView = () => {
                     <h3 className="font-bold text-navy mb-1 text-sm sm:text-base">{item.title}</h3>
                     <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">{item.desc}</p>
                   </div>
-                </div>
+                </Reveal>
               ))}
             </div>
-          </div>
+          </Reveal>
 
           {/* Certifications Section */}
-          <div id="certifications" className="bg-gradient-to-br from-navy to-blue-900 text-white rounded-2xl shadow-md p-6 sm:p-8 mb-8 relative overflow-hidden">
+          <Reveal id="certifications" className="scroll-mt-24 bg-gradient-to-br from-navy to-blue-900 text-white rounded-2xl shadow-md p-6 sm:p-8 mb-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20"></div>
             <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full -ml-20 -mb-20"></div>
             <div className="relative z-10">
@@ -534,21 +667,21 @@ const TeamView = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </Reveal>
 
           {/* Join Our Mission CTA */}
-          <div  id="join" className="text-center">
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all duration-300">
+          <Reveal id="join" className="scroll-mt-24 text-center">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all duration-500">
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3">Join Our Mission</h2>
               <p className="text-xs sm:text-sm mb-5 sm:mb-6 opacity-95 max-w-2xl mx-auto">
                 We're always looking for passionate individuals to join our mission of democratizing investment knowledge 
                 and empowering financial independence through education
               </p>
-              <button type="button" className="bg-white text-orange-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-bold text-sm hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-md">
+              <button type="button" className="bg-white text-orange-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-bold text-sm hover:bg-gray-50 hover:scale-105 transition-all duration-500 shadow-md">
                 Get In Touch
               </button>
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </Layout>
